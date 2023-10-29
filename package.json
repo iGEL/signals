@@ -1,0 +1,19 @@
+{
+  "scripts": {
+    "fmt": "clojure -M:nsorg-fix src test && clojure -M:cljfmt-fix src *.edn test",
+    "lint": "clojure -M:lint",
+    "test": "shadow-cljs compile test",
+    "watch-cljs": "shadow-cljs watch app",
+    "watch-stylus": "stylus --include-css -c -I src -I node_modules -o public/app.css -w -m src/app/app.styl",
+    "watch-test": "shadow-cljs watch test"
+  },
+  "devDependencies": {
+    "shadow-cljs": "2.25.10"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}

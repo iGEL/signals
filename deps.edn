@@ -1,0 +1,27 @@
+{:paths ["src"
+         "test"]
+ :deps {thheller/shadow-cljs {:mvn/version "2.25.10"}
+        com.pitch/uix.core {:mvn/version "1.0.1"}
+        com.pitch/uix.dom {:mvn/version "1.0.1"}}
+ :aliases {:lint {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2023.10.20"}}
+                  :main-opts ["-m" "clj-kondo.main" "--lint" "."]}
+
+           :nsorg-check {:extra-deps {nsorg-cli/nsorg-cli {:mvn/version "0.3.1"}
+                                      rewrite-clj/rewrite-clj {:mvn/version "1.1.45"}}
+                         :main-opts ["-m" "nsorg.cli"]}
+
+           :nsorg-fix {:extra-deps {nsorg-cli/nsorg-cli {:mvn/version "0.3.1"}
+                                    rewrite-clj/rewrite-clj {:mvn/version "1.1.45"}}
+                       :main-opts ["-m" "nsorg.cli" "--replace"]}
+
+           :cljfmt-check {:extra-deps {cljfmt/cljfmt {:mvn/version "0.9.2"}}
+                          :main-opts ["-m" "cljfmt.main" "check"
+                                      "--parallel"
+                                      "--remove-multiple-non-indenting-spaces"
+                                      "--indents" "cljfmt-indents.edn"]}
+
+           :cljfmt-fix {:extra-deps {cljfmt/cljfmt {:mvn/version "0.9.2"}}
+                        :main-opts ["-m" "cljfmt.main" "fix"
+                                    "--parallel"
+                                    "--remove-multiple-non-indenting-spaces"
+                                    "--indents" "cljfmt-indents.edn"]}}}
