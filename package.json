@@ -4,7 +4,7 @@
     "lint": "clojure -M:lint",
     "test": "shadow-cljs compile test",
     "watch-cljs": "shadow-cljs watch app",
-    "watch-stylus": "stylus --include-css -c -I src -I node_modules -o public/app.css -w -m src/app/app.styl",
+    "watch-stylus": "stylus --include-css -c -I src -I node_modules -o public/signals.css -w -m src/signals/signals.styl",
     "watch-test": "shadow-cljs watch test"
   },
   "devDependencies": {
@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "stylus": "^0.60.0"
   },
   "license": "UNLICENSED",
   "private": true
