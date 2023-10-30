@@ -3,8 +3,8 @@ node_modules
 .cpcache
 .shadow-cljs
 public/js
-public/app.css
-public/app.css.map
+public/signals.css
+public/signals.css.map
 .clj-kondo/.cache/
 .lsp
 out
