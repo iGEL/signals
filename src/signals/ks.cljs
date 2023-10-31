@@ -15,60 +15,6 @@
 (s/def ::bottom-white ::lamp/state)
 (s/def ::lights (s/keys :req-un [::top-white ::red ::green ::yellow ::center-white ::zs7 ::bottom-white]))
 
-(defn main
-  "Constructor for a main signal"
-  [{:keys [speed-limit stop-override sh1? zs1? zs3? zs7?]
-    :or {speed-limit 0
-         sh1? false zs1? false zs3? false zs7? false}}]
-  {:post [(p/ret! ::signal/signal %)]}
-  {:system :ks
-   :type :main
-   :main {:speed-limit speed-limit
-          :stop-override stop-override
-          :slow-speed-lights []
-          :sh1? sh1?
-          :zs1? zs1?
-          :zs3? zs3?
-          :zs7? zs7?}})
-
-(defn distant
-  "Constructor for a distant signal"
-  [{:keys [speed-limit distant-addition zs3v?]
-    :or {speed-limit 0
-         zs3v? false}}]
-  {:post [(p/ret! ::signal/signal %)]}
-  {:system :ks
-   :type :distant
-   :distant {:speed-limit speed-limit
-             :distant-addition distant-addition
-             :slow-speed-lights []
-             :zs3v? zs3v?}})
-
-(defn combination
-  "Constructor for a combination of a main & distant signal"
-  [{{distant-speed-limit :speed-limit
-     :keys [zs3v? distant-addition]
-     :or {distant-speed-limit 0
-          zs3v? false}} :distant
-    {main-speed-limit :speed-limit
-     :keys [stop-override sh1? zs1? zs3? zs7?]
-     :or {main-speed-limit 0
-          sh1? false zs1? false zs3? false zs7? false}} :main}]
-  {:post [(p/ret! ::signal/signal %)]}
-  {:system :ks
-   :type :combination
-   :distant {:speed-limit distant-speed-limit
-             :distant-addition distant-addition
-             :slow-speed-lights []
-             :zs3v? zs3v?}
-   :main {:speed-limit main-speed-limit
-          :stop-override stop-override
-          :slow-speed-lights []
-          :sh1? sh1?
-          :zs1? zs1?
-          :zs3? zs3?
-          :zs7? zs7?}})
-
 (defn lights
   "Converts a signal definition into a list of lights and their state"
   [{{main-speed :speed-limit} :main

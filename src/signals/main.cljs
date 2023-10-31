@@ -1,6 +1,7 @@
 (ns signals.main
   (:require
    [signals.ks :as ks]
+   [signals.signal :as signal]
    [uix.core :refer [$ defui]]
    [uix.dom :as dom]))
 
@@ -35,7 +36,8 @@
            :width "200"
            :height "600"}
      ($ defs)
-     ($ ks/view {:signal (ks/main {:speed-limit 0})})))
+     ($ ks/view {:signal (signal/main {:speed-limit 0
+                                       :system :ks})})))
 
 (defn render []
   (dom/render ($ signal) (.getElementById js/document "app")))

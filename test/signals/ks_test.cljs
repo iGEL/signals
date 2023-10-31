@@ -1,7 +1,8 @@
 (ns signals.ks-test
   (:require
    [clojure.test :refer [deftest is testing]]
-   [signals.ks :as ks]))
+   [signals.ks :as ks]
+   [signals.signal :as signal]))
 
 (deftest main-test
   (testing "stop"
@@ -12,7 +13,8 @@
             :center-white nil
             :zs7 nil
             :bottom-white nil}
-           (-> (ks/main {:speed-limit 0})
+           (-> (signal/main {:speed-limit 0
+                             :system :ks})
                ks/lights))))
 
   (testing "proceed"
@@ -23,7 +25,8 @@
             :center-white nil
             :zs7 nil
             :bottom-white nil}
-           (-> (ks/main {:speed-limit nil})
+           (-> (signal/main {:speed-limit nil
+                             :system :ks})
                ks/lights)))))
 
 (deftest distant-test
@@ -35,7 +38,8 @@
             :center-white nil
             :zs7 nil
             :bottom-white nil}
-           (-> (ks/distant {:speed-limit 0})
+           (-> (signal/distant {:speed-limit 0
+                                :system :ks})
                ks/lights))))
 
   (testing "proceed expected"
@@ -46,7 +50,8 @@
             :center-white nil
             :zs7 nil
             :bottom-white nil}
-           (-> (ks/distant {:speed-limit nil})
+           (-> (signal/distant {:speed-limit nil
+                                :system :ks})
                ks/lights)))))
 
 (deftest combination-test
@@ -58,8 +63,9 @@
             :center-white nil
             :zs7 nil
             :bottom-white nil}
-           (-> (ks/combination {:distant {:speed-limit 0}
-                                :main {:speed-limit 0}})
+           (-> (signal/combination {:distant {:speed-limit 0}
+                                    :main {:speed-limit 0}
+                                    :system :ks})
                ks/lights)))
 
     (is (= {:top-white nil
@@ -69,8 +75,9 @@
             :center-white nil
             :zs7 nil
             :bottom-white nil}
-           (-> (ks/combination {:distant {:speed-limit nil}
-                                :main {:speed-limit 0}})
+           (-> (signal/combination {:distant {:speed-limit nil}
+                                    :main {:speed-limit 0}
+                                    :system :ks})
                ks/lights))))
 
   (testing "proceed + stop expected"
@@ -81,8 +88,9 @@
             :center-white nil
             :zs7 nil
             :bottom-white nil}
-           (-> (ks/combination {:distant {:speed-limit 0}
-                                :main {:speed-limit nil}})
+           (-> (signal/combination {:distant {:speed-limit 0}
+                                    :main {:speed-limit nil}
+                                    :system :ks})
                ks/lights))))
 
   (testing "proceed + proceed expected"
@@ -93,6 +101,7 @@
             :center-white nil
             :zs7 nil
             :bottom-white nil}
-           (-> (ks/combination {:distant {:speed-limit nil}
-                                :main {:speed-limit nil}})
+           (-> (signal/combination {:distant {:speed-limit nil}
+                                    :main {:speed-limit nil}
+                                    :system :ks})
                ks/lights)))))
