@@ -4,79 +4,84 @@
    [preo.core :as p]))
 
 ;; Aspects
-;; 0 = stop (red), nil = unlimited (green), other = limited speed
-(s/def ::speed-limit (s/nilable (s/and int? #(not (neg? %)))))
-(s/def ::stop-override (s/nilable #{:zs1 :zs7 :sh1}))
+(s/def ::aspect #{:stop :proceed :stop+zs1 :stop+zs7 :stop+sh1})
+(s/def ::speed-limit (s/nilable (s/and int? pos?)))
 
 ;; Configuration
 (s/def ::sh1? boolean?)
 (s/def ::zs1? boolean?)
-(s/def ::zs3? boolean?)
-(s/def ::zs3v? boolean?)
+(s/def ::zs3 (s/nilable #{:display :sign}))
+(s/def ::zs3v (s/nilable #{:display :sign}))
 (s/def ::zs7? boolean?)
 ;; Does the Hv have a yellow light/second arm or does Hl have yellow light, green or yellow strips?
 (s/def ::slow-speed-lights (s/coll-of int? :distinct true :kind vector?))
 (s/def ::distant-addition (s/nilable #{:repeater :shortened-break-path}))
 
-(s/def ::main (s/keys :req-un [::speed-limit ::stop-override ::slow-speed-lights ::sh1? ::zs1? ::zs3? ::zs7?]))
-(s/def ::distant (s/keys :req-un [::speed-limit ::distant-addition ::slow-speed-lights ::zs3v?]))
+(s/def ::main (s/keys :req-un [::aspect ::speed-limit ::slow-speed-lights ::sh1? ::zs1? ::zs3 ::zs7?]))
+(s/def ::distant (s/keys :req-un [::aspect ::speed-limit ::distant-addition ::slow-speed-lights ::zs3v]))
 
 (s/def ::type #{:distant :main :combination})
 (s/def ::system #{:ks})
 (s/def ::signal (s/keys :req-un [::type ::system]
                         :opt-un [::distant ::main]))
 
+(defn stop-aspect?
+  "Returns true when the given aspect is a stop aspect"
+  [aspect]
+  {:pre [(p/arg! (s/nilable ::aspect) aspect)]}
+  (#{:stop :stop+zs1 :stop+zs7 :stop+sh1} aspect))
+
 (defn main
   "Constructor for a main signal"
-  [{:keys [speed-limit stop-override sh1? zs1? zs3? zs7? system]
-    :or {speed-limit 0
-         sh1? false zs1? false zs3? false zs7? false}}]
+  [{:keys [aspect speed-limit sh1? zs1? zs3 zs7? system]
+    :or {sh1? false zs1? false zs3 nil zs7? false}}]
   {:post [(p/ret! ::signal %)]}
   {:system system
    :type :main
-   :main {:speed-limit speed-limit
-          :stop-override stop-override
+   :main {:aspect aspect
+          :speed-limit speed-limit
           :slow-speed-lights []
           :sh1? sh1?
           :zs1? zs1?
-          :zs3? zs3?
+          :zs3 zs3
           :zs7? zs7?}})
 
 (defn distant
   "Constructor for a distant signal"
-  [{:keys [speed-limit distant-addition zs3v? system]
-    :or {speed-limit 0
-         zs3v? false}}]
+  [{:keys [aspect speed-limit distant-addition zs3v system]
+    :or {zs3v nil}}]
   {:post [(p/ret! ::signal %)]}
   {:system system
    :type :distant
-   :distant {:speed-limit speed-limit
+   :distant {:aspect aspect
+             :speed-limit speed-limit
              :distant-addition distant-addition
              :slow-speed-lights []
-             :zs3v? zs3v?}})
+             :zs3v zs3v}})
 
 (defn combination
   "Constructor for a combination of a main & distant signal"
-  [{{distant-speed-limit :speed-limit
-     :keys [zs3v? distant-addition]
-     :or {distant-speed-limit 0
-          zs3v? false}} :distant
-    {main-speed-limit :speed-limit
-     :keys [stop-override sh1? zs1? zs3? zs7?]
-     :or {main-speed-limit 0
-          sh1? false zs1? false zs3? false zs7? false}} :main
+  [{{distant-aspect :aspect
+     distant-speed-limit :speed-limit
+     :keys [zs3v distant-addition]
+     :or {zs3v nil}} :distant
+    {main-aspect :aspect
+     main-speed-limit :speed-limit
+     :keys [sh1? zs1? zs3 zs7?]
+     :or {sh1? false zs1? false zs3 nil zs7? false}} :main
     system :system}]
   {:post [(p/ret! ::signal %)]}
   {:system system
    :type :combination
-   :distant {:speed-limit distant-speed-limit
+   :distant {:aspect distant-aspect
+             :speed-limit distant-speed-limit
              :distant-addition distant-addition
              :slow-speed-lights []
-             :zs3v? zs3v?}
-   :main {:speed-limit main-speed-limit
-          :stop-override stop-override
+             :zs3v zs3v}
+   :main {:aspect main-aspect
+          :speed-limit main-speed-limit
           :slow-speed-lights []
           :sh1? sh1?
           :zs1? zs1?
-          :zs3? zs3?
+          :zs3 zs3
           :zs7? zs7?}})

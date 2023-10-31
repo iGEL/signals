@@ -13,7 +13,7 @@
             :center-white nil
             :zs7 nil
             :bottom-white nil}
-           (-> (signal/main {:speed-limit 0
+           (-> (signal/main {:aspect :stop
                              :system :ks})
                ks/lights))))
 
@@ -25,7 +25,7 @@
             :center-white nil
             :zs7 nil
             :bottom-white nil}
-           (-> (signal/main {:speed-limit nil
+           (-> (signal/main {:aspect :proceed
                              :system :ks})
                ks/lights)))))
 
@@ -38,7 +38,7 @@
             :center-white nil
             :zs7 nil
             :bottom-white nil}
-           (-> (signal/distant {:speed-limit 0
+           (-> (signal/distant {:aspect :stop
                                 :system :ks})
                ks/lights))))
 
@@ -50,7 +50,7 @@
             :center-white nil
             :zs7 nil
             :bottom-white nil}
-           (-> (signal/distant {:speed-limit nil
+           (-> (signal/distant {:aspect :proceed
                                 :system :ks})
                ks/lights)))))
 
@@ -63,8 +63,8 @@
             :center-white nil
             :zs7 nil
             :bottom-white nil}
-           (-> (signal/combination {:distant {:speed-limit 0}
-                                    :main {:speed-limit 0}
+           (-> (signal/combination {:distant {:aspect :stop}
+                                    :main {:aspect :stop}
                                     :system :ks})
                ks/lights)))
 
@@ -75,8 +75,8 @@
             :center-white nil
             :zs7 nil
             :bottom-white nil}
-           (-> (signal/combination {:distant {:speed-limit nil}
-                                    :main {:speed-limit 0}
+           (-> (signal/combination {:distant {:aspect :proceed}
+                                    :main {:aspect :stop}
                                     :system :ks})
                ks/lights))))
 
@@ -88,8 +88,8 @@
             :center-white nil
             :zs7 nil
             :bottom-white nil}
-           (-> (signal/combination {:distant {:speed-limit 0}
-                                    :main {:speed-limit nil}
+           (-> (signal/combination {:distant {:aspect :stop}
+                                    :main {:aspect :proceed}
                                     :system :ks})
                ks/lights))))
 
@@ -101,7 +101,7 @@
             :center-white nil
             :zs7 nil
             :bottom-white nil}
-           (-> (signal/combination {:distant {:speed-limit nil}
-                                    :main {:speed-limit nil}
+           (-> (signal/combination {:distant {:aspect :proceed}
+                                    :main {:aspect :proceed}
                                     :system :ks})
                ks/lights)))))

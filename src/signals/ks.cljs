@@ -17,8 +17,8 @@
 
 (defn lights
   "Converts a signal definition into a list of lights and their state"
-  [{{main-speed :speed-limit} :main
-    {distant-speed :speed-limit} :distant
+  [{{main-aspect :aspect} :main
+    {distant-aspect :aspect} :distant
     signal-type :type
     :as signal}]
   {:pre [(p/arg! ::signal/signal signal)]
@@ -26,16 +26,16 @@
   {:top-white nil
    :red (cond
           (= :distant signal-type) nil
-          (zero? main-speed) :on
+          (signal/stop-aspect? main-aspect) :on
           :else :off)
    :green (cond
-            (zero? main-speed) :off
-            (zero? distant-speed) :off
+            (signal/stop-aspect? main-aspect) :off
+            (signal/stop-aspect? distant-aspect) :off
             :else :on)
    :yellow (cond
              (= :main signal-type) nil
-             (zero? main-speed) :off
-             (zero? distant-speed) :on
+             (signal/stop-aspect? main-aspect) :off
+             (signal/stop-aspect? distant-aspect) :on
              :else :off)
    :center-white nil
    :zs7 nil
