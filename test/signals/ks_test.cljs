@@ -95,6 +95,45 @@
                                :speed-limit 10
                                :zs3 :display
                                :system :ks})
+                 ks/lights)))))
+
+  (testing "zs7"
+    (testing "stop+zs7 without zs7 shows hp0"
+      (is (= {:top-white nil
+              :red :on
+              :green :off
+              :yellow nil
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/main {:aspect :stop+zs7
+                               :system :ks})
+                 ks/lights))))
+
+    (testing "stop+zs7 with zs7 shows hp0 and zs7"
+      (is (= {:top-white nil
+              :red :on
+              :green :off
+              :yellow nil
+              :center-white nil
+              :zs7 :on
+              :bottom-white nil}
+             (-> (signal/main {:aspect :stop+zs7
+                               :zs7? true
+                               :system :ks})
+                 ks/lights))))
+
+    (testing "proceed with zs7 shows ks1"
+      (is (= {:top-white nil
+              :red :off
+              :green :on
+              :yellow nil
+              :center-white nil
+              :zs7 :off
+              :bottom-white nil}
+             (-> (signal/main {:aspect :proceed
+                               :zs7? true
+                               :system :ks})
                  ks/lights))))))
 
 (deftest distant-test
@@ -187,6 +226,19 @@
              (-> (signal/distant {:aspect :proceed
                                   :speed-limit 10
                                   :zs3v :display
+                                  :system :ks})
+                 ks/lights)))))
+
+  (testing "zs7"
+    (testing "stop+zs7 expected shows ks2"
+      (is (= {:top-white nil
+              :red nil
+              :green :off
+              :yellow :on
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/distant {:aspect :stop+zs7
                                   :system :ks})
                  ks/lights))))))
 
@@ -413,6 +465,61 @@
              (-> (signal/combination {:distant {:aspect :proceed
                                                 :zs3v :sign
                                                 :speed-limit 10}
+                                      :main {:aspect :proceed}
+                                      :system :ks})
+                 ks/lights)))))
+
+  (testing "zs7"
+    (testing "stop with zs7 shows hp0"
+      (is (= {:top-white nil
+              :red :on
+              :green :off
+              :yellow :off
+              :center-white nil
+              :zs7 :off
+              :bottom-white nil}
+             (-> (signal/combination {:distant {:aspect :stop}
+                                      :main {:aspect :stop
+                                             :zs7? true}
+                                      :system :ks})
+                 ks/lights))))
+
+    (testing "stop+zs7 without zs7 shows hp0"
+      (is (= {:top-white nil
+              :red :on
+              :green :off
+              :yellow :off
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/combination {:distant {:aspect :stop}
+                                      :main {:aspect :stop+zs7}
+                                      :system :ks})
+                 ks/lights))))
+
+    (testing "stop+zs7 with zs7 shows hp0 and zs7"
+      (is (= {:top-white nil
+              :red :on
+              :green :off
+              :yellow :off
+              :center-white nil
+              :zs7 :on
+              :bottom-white nil}
+             (-> (signal/combination {:distant {:aspect :stop}
+                                      :main {:aspect :stop+zs7
+                                             :zs7? true}
+                                      :system :ks})
+                 ks/lights))))
+
+    (testing "proceed + stop+zs7 expected shows ks2"
+      (is (= {:top-white nil
+              :red :off
+              :green :off
+              :yellow :on
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/combination {:distant {:aspect :stop+zs7}
                                       :main {:aspect :proceed}
                                       :system :ks})
                  ks/lights))))))

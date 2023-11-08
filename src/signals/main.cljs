@@ -37,8 +37,9 @@
            :height "600"}
      ($ defs)
      ($ ks/view {:signal (signal/main {:speed-limit 10
-                                       :aspect :stop+zs1
+                                       :aspect :stop+zs7
                                        :zs1? true
+                                       :zs7? true
                                        :system :ks})})))
 
 (defn render []
