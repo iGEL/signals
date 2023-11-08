@@ -38,7 +38,7 @@
      ($ defs)
      ($ ks/view {:signal (signal/distant {:speed-limit 10
                                           :aspect :stop+zs7
-                                          :distant-addition :shortened-break-path
+                                          :distant-addition :repeater
                                           :system :ks})})))
 
 (defn render []

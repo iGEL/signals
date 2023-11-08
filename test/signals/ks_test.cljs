@@ -270,6 +270,76 @@
                                   :system :ks})
                  ks/lights)))))
 
+  (testing "repeater"
+    (testing "stop expected with repeater shows ks2 plus bottom white"
+      (is (= {:top-white nil
+              :red nil
+              :green :off
+              :yellow :on
+              :center-white nil
+              :zs7 nil
+              :bottom-white :on}
+             (-> (signal/distant {:aspect :stop
+                                  :distant-addition :repeater
+                                  :system :ks})
+                 ks/lights))))
+
+    (testing "proceed expected with repeater shows ks1"
+      (is (= {:top-white nil
+              :red nil
+              :green :on
+              :yellow :off
+              :center-white nil
+              :zs7 nil
+              :bottom-white :off}
+             (-> (signal/distant {:aspect :proceed
+                                  :distant-addition :repeater
+                                  :system :ks})
+                 ks/lights))))
+
+    (testing "proceed expected with repeater & speed limit, but no zs3v shows ks1"
+      (is (= {:top-white nil
+              :red nil
+              :green :on
+              :yellow :off
+              :center-white nil
+              :zs7 nil
+              :bottom-white :off}
+             (-> (signal/distant {:aspect :proceed
+                                  :speed-limit 10
+                                  :distant-addition :repeater
+                                  :system :ks})
+                 ks/lights))))
+
+    (testing "proceed expected with repeater & zs3v, but no speed limit shows ks1"
+      (is (= {:top-white nil
+              :red nil
+              :green :on
+              :yellow :off
+              :center-white nil
+              :zs7 nil
+              :bottom-white :off}
+             (-> (signal/distant {:aspect :proceed
+                                  :zs3v :display
+                                  :distant-addition :repeater
+                                  :system :ks})
+                 ks/lights))))
+
+    (testing "proceed expected with repeater + zs3v and speed limit shows ks1 (blinking) and bottom white"
+      (is (= {:top-white nil
+              :red nil
+              :green :blinking
+              :yellow :off
+              :center-white nil
+              :zs7 nil
+              :bottom-white :on}
+             (-> (signal/distant {:aspect :proceed
+                                  :speed-limit 10
+                                  :zs3v :display
+                                  :distant-addition :repeater
+                                  :system :ks})
+                 ks/lights)))))
+
   (testing "sh1"
     (testing "stop+sh1 expected shows ks2"
       (is (= {:top-white nil

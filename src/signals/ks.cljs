@@ -60,13 +60,19 @@
           (not zs7?) nil
           (= :stop+zs7 main-aspect) :on
           :else :off)
-   :bottom-white (cond
-                   (and (not sh1?)
-                        (or (not zs1?)
-                            (not= :combination signal-type))) nil
-                   (= :stop+sh1 main-aspect) :on
-                   (= :stop+zs1 main-aspect) :blinking
-                   :else :off)})
+   :bottom-white (if (= :distant signal-type)
+                   (cond
+                     (not= :repeater distant-addition) nil
+                     (or (signal/stop-aspect? distant-aspect)
+                         (and distant-speed-limit zs3v)) :on
+                     :else :off)
+                   (cond
+                     (and (not sh1?)
+                          (or (not zs1?)
+                              (not= :combination signal-type))) nil
+                     (= :stop+sh1 main-aspect) :on
+                     (= :stop+zs1 main-aspect) :blinking
+                     :else :off))})
 
 (defui view [{:keys [signal]}]
   {:pre [(p/arg! ::signal/signal signal)]}
