@@ -18,6 +18,7 @@
 (defn lights
   "Converts a signal definition into a list of lights and their state"
   [{{main-aspect :aspect
+     sh1? :sh1?
      zs1? :zs1?
      zs7? :zs7?} :main
     {distant-aspect :aspect
@@ -43,8 +44,10 @@
              (signal/stop-aspect? distant-aspect) :on
              :else :off)
    :center-white (cond
-                   (or (not zs1?)
-                       (not= :main signal-type)) nil
+                   (and (not sh1?)
+                        (or (not zs1?)
+                            (not= :main signal-type))) nil
+                   (= :stop+sh1 main-aspect) :on
                    (= :stop+zs1 main-aspect) :blinking
                    :else :off)
    :zs7 (cond
@@ -52,8 +55,10 @@
           (= :stop+zs7 main-aspect) :on
           :else :off)
    :bottom-white (cond
-                   (or (not zs1?)
-                       (not= :combination signal-type)) nil
+                   (and (not sh1?)
+                        (or (not zs1?)
+                            (not= :combination signal-type))) nil
+                   (= :stop+sh1 main-aspect) :on
                    (= :stop+zs1 main-aspect) :blinking
                    :else :off)})
 

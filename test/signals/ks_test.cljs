@@ -29,6 +29,45 @@
                              :system :ks})
                ks/lights))))
 
+  (testing "sh1"
+    (testing "stop+sh1 without sh1 shows hp0"
+      (is (= {:top-white nil
+              :red :on
+              :green :off
+              :yellow nil
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/main {:aspect :stop+sh1
+                               :system :ks})
+                 ks/lights))))
+
+    (testing "stop+sh1 with sh1 shows hp0 and sh1"
+      (is (= {:top-white nil
+              :red :on
+              :green :off
+              :yellow nil
+              :center-white :on
+              :zs7 nil
+              :bottom-white :on}
+             (-> (signal/main {:aspect :stop+sh1
+                               :sh1? true
+                               :system :ks})
+                 ks/lights))))
+
+    (testing "proceed with sh1 shows ks1"
+      (is (= {:top-white nil
+              :red :off
+              :green :on
+              :yellow nil
+              :center-white :off
+              :zs7 nil
+              :bottom-white :off}
+             (-> (signal/main {:aspect :proceed
+                               :sh1? true
+                               :system :ks})
+                 ks/lights)))))
+
   (testing "zs1"
     (testing "stop+zs1 without zs1 shows hp0"
       (is (= {:top-white nil
@@ -160,6 +199,19 @@
            (-> (signal/distant {:aspect :proceed
                                 :system :ks})
                ks/lights))))
+
+  (testing "sh1"
+    (testing "stop+sh1 expected shows ks2"
+      (is (= {:top-white nil
+              :red nil
+              :green :off
+              :yellow :on
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/distant {:aspect :stop+sh1
+                                  :system :ks})
+                 ks/lights)))))
 
   (testing "zs1"
     (testing "stop+zs1 expected shows ks2"
@@ -293,6 +345,61 @@
                                     :main {:aspect :proceed}
                                     :system :ks})
                ks/lights))))
+
+  (testing "sh1"
+    (testing "stop with sh1 shows hp0"
+      (is (= {:top-white nil
+              :red :on
+              :green :off
+              :yellow :off
+              :center-white :off
+              :zs7 nil
+              :bottom-white :off}
+             (-> (signal/combination {:distant {:aspect :stop}
+                                      :main {:aspect :stop
+                                             :sh1? true}
+                                      :system :ks})
+                 ks/lights))))
+
+    (testing "stop+sh1 without sh1 shows hp0"
+      (is (= {:top-white nil
+              :red :on
+              :green :off
+              :yellow :off
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/combination {:distant {:aspect :stop}
+                                      :main {:aspect :stop+sh1}
+                                      :system :ks})
+                 ks/lights))))
+
+    (testing "stop+sh1 with sh1 shows hp0 and sh1"
+      (is (= {:top-white nil
+              :red :on
+              :green :off
+              :yellow :off
+              :center-white :on
+              :zs7 nil
+              :bottom-white :on}
+             (-> (signal/combination {:distant {:aspect :stop}
+                                      :main {:aspect :stop+sh1
+                                             :sh1? true}
+                                      :system :ks})
+                 ks/lights))))
+
+    (testing "proceed + stop+sh1 expected shows ks2"
+      (is (= {:top-white nil
+              :red :off
+              :green :off
+              :yellow :on
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/combination {:distant {:aspect :stop+sh1}
+                                      :main {:aspect :proceed}
+                                      :system :ks})
+                 ks/lights)))))
 
   (testing "zs1"
     (testing "stop with zs1 shows hp0"
