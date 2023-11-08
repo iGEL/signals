@@ -17,7 +17,8 @@
 
 (defn lights
   "Converts a signal definition into a list of lights and their state"
-  [{{main-aspect :aspect} :main
+  [{{main-aspect :aspect
+     zs1? :zs1?} :main
     {distant-aspect :aspect
      distant-speed-limit :speed-limit
      zs3v :zs3v} :distant
@@ -40,13 +41,21 @@
              (signal/stop-aspect? main-aspect) :off
              (signal/stop-aspect? distant-aspect) :on
              :else :off)
-   :center-white nil
+   :center-white (cond
+                   (or (not zs1?)
+                       (not= :main signal-type)) nil
+                   (= :stop+zs1 main-aspect) :blinking
+                   :else :off)
    :zs7 nil
-   :bottom-white nil})
+   :bottom-white (cond
+                   (or (not zs1?)
+                       (not= :combination signal-type)) nil
+                   (= :stop+zs1 main-aspect) :blinking
+                   :else :off)})
 
 (defui view [{:keys [signal]}]
   {:pre [(p/arg! ::signal/signal signal)]}
-  (let [{:keys [red green yellow]} (lights signal)]
+  (let [{:keys [red green yellow center-white bottom-white]} (lights signal)]
     ($ :g
        ($ :rect {:width 64
                  :height 120
@@ -68,4 +77,14 @@
                 :state yellow
                 :size :big
                 :x 47.5
-                :y 57.3}))))
+                :y 57.3})
+       ($ lamp {:color :white
+                :state center-white
+                :size :small
+                :x 32
+                :y 81})
+       ($ lamp {:color :white
+                :state bottom-white
+                :size :small
+                :x 11.5
+                :y 98.7}))))
