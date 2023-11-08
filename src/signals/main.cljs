@@ -36,11 +36,10 @@
            :width "200"
            :height "600"}
      ($ defs)
-     ($ ks/view {:signal (signal/main {:speed-limit 10
-                                       :aspect :stop+zs7
-                                       :zs1? true
-                                       :zs7? true
-                                       :system :ks})})))
+     ($ ks/view {:signal (signal/distant {:speed-limit 10
+                                          :aspect :stop+zs7
+                                          :distant-addition :shortened-break-path
+                                          :system :ks})})))
 
 (defn render []
   (dom/render ($ signal) (.getElementById js/document "app")))

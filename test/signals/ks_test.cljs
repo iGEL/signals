@@ -200,6 +200,76 @@
                                 :system :ks})
                ks/lights))))
 
+  (testing "shortened break path"
+    (testing "stop expected with shortened break path shows ks2 plus top white"
+      (is (= {:top-white :on
+              :red nil
+              :green :off
+              :yellow :on
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/distant {:aspect :stop
+                                  :distant-addition :shortened-break-path
+                                  :system :ks})
+                 ks/lights))))
+
+    (testing "proceed expected with shortened break path shows ks1"
+      (is (= {:top-white :off
+              :red nil
+              :green :on
+              :yellow :off
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/distant {:aspect :proceed
+                                  :distant-addition :shortened-break-path
+                                  :system :ks})
+                 ks/lights))))
+
+    (testing "proceed expected with shortened break path & speed limit, but no zs3v shows ks1"
+      (is (= {:top-white :off
+              :red nil
+              :green :on
+              :yellow :off
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/distant {:aspect :proceed
+                                  :speed-limit 10
+                                  :distant-addition :shortened-break-path
+                                  :system :ks})
+                 ks/lights))))
+
+    (testing "proceed expected with shortened break path & zs3v, but no speed limit shows ks1"
+      (is (= {:top-white :off
+              :red nil
+              :green :on
+              :yellow :off
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/distant {:aspect :proceed
+                                  :zs3v :display
+                                  :distant-addition :shortened-break-path
+                                  :system :ks})
+                 ks/lights))))
+
+    (testing "proceed expected with shortened break path + zs3v and speed limit shows ks1 (blinking) and top white"
+      (is (= {:top-white :on
+              :red nil
+              :green :blinking
+              :yellow :off
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/distant {:aspect :proceed
+                                  :speed-limit 10
+                                  :zs3v :display
+                                  :distant-addition :shortened-break-path
+                                  :system :ks})
+                 ks/lights)))))
+
   (testing "sh1"
     (testing "stop+sh1 expected shows ks2"
       (is (= {:top-white nil
@@ -319,6 +389,95 @@
                                     :main {:aspect :stop}
                                     :system :ks})
                ks/lights))))
+
+  (testing "shortened break path"
+    (testing "stop with shortened break path shows hp0"
+      (is (= {:top-white :off
+              :red :on
+              :green :off
+              :yellow :off
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/combination {:distant {:aspect :stop
+                                                :distant-addition :shortened-break-path}
+                                      :main {:aspect :stop}
+                                      :system :ks})
+                 ks/lights))))
+
+    (testing "proceed + stop expected with shortened break path shows ks2 with top white"
+      (is (= {:top-white :on
+              :red :off
+              :green :off
+              :yellow :on
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/combination {:distant {:aspect :stop
+                                                :distant-addition :shortened-break-path}
+                                      :main {:aspect :proceed}
+                                      :system :ks})
+                 ks/lights))))
+
+    (testing "proceed + proceed expected with shortened break path shows ks1"
+      (is (= {:top-white :off
+              :red :off
+              :green :on
+              :yellow :off
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/combination {:distant {:aspect :proceed
+                                                :distant-addition :shortened-break-path}
+                                      :main {:aspect :proceed}
+                                      :system :ks})
+                 ks/lights))))
+
+    (testing "proceed + proceed expected + shortened break path + zs3v but no speed-limit shows ks1"
+      (is (= {:top-white :off
+              :red :off
+              :green :on
+              :yellow :off
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/combination {:distant {:aspect :proceed
+                                                :zs3v :display
+                                                :distant-addition :shortened-break-path}
+                                      :main {:aspect :proceed}
+                                      :system :ks})
+                 ks/lights))))
+
+    (testing "proceed + proceed expected + speed-limit but no zs3v shows ks1"
+      (is (= {:top-white :off
+              :red :off
+              :green :on
+              :yellow :off
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/combination {:distant {:aspect :proceed
+                                                :speed-limit 10
+                                                :distant-addition :shortened-break-path}
+                                      :main {:aspect :proceed}
+                                      :system :ks})
+                 ks/lights))))
+
+    (testing "proceed + proceed expected + zs3 & speed-limit shows ks1 (blinking) & top white"
+      (is (= {:top-white :on
+              :red :off
+              :green :blinking
+              :yellow :off
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/combination {:distant {:aspect :proceed
+                                                :zs3v :sign
+                                                :speed-limit 10
+                                                :distant-addition :shortened-break-path}
+                                      :main {:aspect :proceed}
+                                      :system :ks})
+                 ks/lights)))))
 
   (testing "proceed + stop expected shows ks2"
     (is (= {:top-white nil

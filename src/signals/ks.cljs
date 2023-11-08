@@ -23,12 +23,18 @@
      zs7? :zs7?} :main
     {distant-aspect :aspect
      distant-speed-limit :speed-limit
+     distant-addition :distant-addition
      zs3v :zs3v} :distant
     signal-type :type
     :as signal}]
   {:pre [(p/arg! ::signal/signal signal)]
    :post [(p/ret! ::lights %)]}
-  {:top-white nil
+  {:top-white (cond
+                (not= :shortened-break-path distant-addition) nil
+                (signal/stop-aspect? main-aspect) :off
+                (or (signal/stop-aspect? distant-aspect)
+                    (and distant-speed-limit zs3v)) :on
+                :else :off)
    :red (cond
           (= :distant signal-type) nil
           (signal/stop-aspect? main-aspect) :on
@@ -64,7 +70,7 @@
 
 (defui view [{:keys [signal]}]
   {:pre [(p/arg! ::signal/signal signal)]}
-  (let [{:keys [red green yellow center-white zs7 bottom-white]} (lights signal)]
+  (let [{:keys [top-white red green yellow center-white zs7 bottom-white]} (lights signal)]
     ($ :g
        ($ :rect {:width 64
                  :height 120
@@ -72,6 +78,11 @@
                  :y 0
                  :style {:fill "black"
                          :stroke "none"}})
+       ($ lamp {:color :white
+                :state top-white
+                :size :small
+                :x 16.5
+                :y 14.5})
        ($ lamp {:color :red
                 :state red
                 :size :big
