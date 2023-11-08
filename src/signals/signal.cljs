@@ -34,7 +34,7 @@
 (defn main
   "Constructor for a main signal"
   [{:keys [aspect speed-limit sh1? zs1? zs3 zs7? system]
-    :or {sh1? false zs1? false zs3 nil zs7? false}}]
+    :or {aspect :stop sh1? false zs1? false zs3 nil zs7? false}}]
   {:post [(p/ret! ::signal %)]}
   {:system system
    :type :main
@@ -49,7 +49,7 @@
 (defn distant
   "Constructor for a distant signal"
   [{:keys [aspect speed-limit distant-addition zs3v system]
-    :or {zs3v nil}}]
+    :or {aspect :stop zs3v nil}}]
   {:post [(p/ret! ::signal %)]}
   {:system system
    :type :distant
@@ -64,11 +64,11 @@
   [{{distant-aspect :aspect
      distant-speed-limit :speed-limit
      :keys [zs3v distant-addition]
-     :or {zs3v nil}} :distant
+     :or {distant-aspect :stop zs3v nil}} :distant
     {main-aspect :aspect
      main-speed-limit :speed-limit
      :keys [sh1? zs1? zs3 zs7?]
-     :or {sh1? false zs1? false zs3 nil zs7? false}} :main
+     :or {main-aspect :stop sh1? false zs1? false zs3 nil zs7? false}} :main
     system :system}]
   {:post [(p/ret! ::signal %)]}
   {:system system
