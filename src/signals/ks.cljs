@@ -54,7 +54,8 @@
                         (or (not zs1?)
                             (not= :main signal-type))) nil
                    (= :stop+sh1 main-aspect) :on
-                   (= :stop+zs1 main-aspect) :blinking
+                   (and (= :main signal-type)
+                        (= :stop+zs1 main-aspect)) :blinking
                    :else :off)
    :zs7 (cond
           (not zs7?) nil
@@ -71,7 +72,8 @@
                           (or (not zs1?)
                               (not= :combination signal-type))) nil
                      (= :stop+sh1 main-aspect) :on
-                     (= :stop+zs1 main-aspect) :blinking
+                     (and (= :combination signal-type)
+                          (= :stop+zs1 main-aspect)) :blinking
                      :else :off))})
 
 (defui view [{:keys [signal]}]

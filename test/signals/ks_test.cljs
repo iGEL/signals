@@ -94,6 +94,20 @@
                                :system :ks})
                  ks/lights))))
 
+    (testing "stop+zs1 with sh1 + zs1 shows hp0 and zs1"
+      (is (= {:top-white nil
+              :red :on
+              :green :off
+              :yellow nil
+              :center-white :blinking
+              :zs7 nil
+              :bottom-white :off}
+             (-> (signal/main {:aspect :stop+zs1
+                               :sh1? true
+                               :zs1? true
+                               :system :ks})
+                 ks/lights))))
+
     (testing "proceed with zs1 shows ks1"
       (is (= {:top-white nil
               :red :off
@@ -668,6 +682,21 @@
               :bottom-white :blinking}
              (-> (signal/combination {:distant {:aspect :stop}
                                       :main {:aspect :stop+zs1
+                                             :zs1? true}
+                                      :system :ks})
+                 ks/lights))))
+
+    (testing "stop+zs1 with sh1 & zs1 shows hp0 and zs1"
+      (is (= {:top-white nil
+              :red :on
+              :green :off
+              :yellow :off
+              :center-white :off
+              :zs7 nil
+              :bottom-white :blinking}
+             (-> (signal/combination {:distant {:aspect :stop}
+                                      :main {:aspect :stop+zs1
+                                             :sh1? true
                                              :zs1? true}
                                       :system :ks})
                  ks/lights))))
