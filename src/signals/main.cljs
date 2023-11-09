@@ -38,6 +38,17 @@
      ($ defs)
      ($ ks/view {:signal signal})))
 
+(defui button [{:keys [on-click active? children disabled? type title]
+                :or {type "primary"}}]
+  ($ :<>
+     ($ :button.btn.btn-sm
+        {:class [(str "btn-outline-" type) (when active? "active")]
+         :disabled disabled?
+         :on-click on-click
+         :title title}
+        children)
+     " "))
+
 (defui demo []
   (let [[distant set-distant!] (uix/use-state (signal/distant {:system :ks}))
         [repeater set-repeater!] (uix/use-state (signal/distant {:system :ks
@@ -51,7 +62,7 @@
         set-main-aspect! (fn [aspect]
                            (set-main! (assoc-in main [:main :aspect] aspect))
                            (set-combination! (assoc-in combination [:distant :aspect] aspect)))]
-    ($ :table {:border 1}
+    ($ :table.table
        ($ :thead
           ($ :tr
              ($ :th)
@@ -63,40 +74,105 @@
              ($ :td "Begriff")
              ($ :td)
              ($ :td)
-             ($ :td
-                ($ :button {:on-click #(set-combination-aspect! :stop)} "Halt")
-                ($ :button {:on-click #(set-combination-aspect! :proceed)} "Fahrt")
-                ($ :button {:on-click #(set-combination-aspect! :stop+sh1)
-                            :disabled (not (-> combination :main :sh1?))} "Halt + Sh1")
-                ($ :button {:on-click #(set-combination-aspect! :stop+zs1)
-                            :disabled (not (-> combination :main :zs1?))} "Halt + Zs1")
-                ($ :button {:on-click #(set-combination-aspect! :stop+zs7)
-                            :disabled (not (-> combination :main :zs7?))} "Halt + Zs7"))
-             ($ :td
-                ($ :button {:on-click #(set-main-aspect! :stop)} "Halt")
-                ($ :button {:on-click #(set-main-aspect! :proceed)} "Fahrt")
-                ($ :button {:on-click #(set-main-aspect! :stop+sh1)
-                            :disabled (not (-> main :main :sh1?))} "Halt + Sh1")
-                ($ :button {:on-click #(set-main-aspect! :stop+zs1)
-                            :disabled (not (-> main :main :zs1?))} "Halt + Zs1")
-                ($ :button {:on-click #(set-main-aspect! :stop+zs7)
-                            :disabled (not (-> main :main :zs7?))} "Halt + Zs7")))
+             (let [combination-main (:main combination)
+                   current-aspect (:aspect combination-main)]
+               ($ :td
+                  ($ button {:on-click #(set-combination-aspect! :proceed)
+                             :active? (= :proceed current-aspect)
+                             :type "success"} "Fahrt")
+                  ($ :div.btn-group
+                     ($ button {:on-click #(set-combination-aspect! :stop)
+                                :active? (signal/stop-aspect? current-aspect)
+                                :type "danger"} "Halt")
+                     (when (:sh1? combination-main)
+                       ($ button {:on-click #(set-combination-aspect! (if (= :stop+sh1 current-aspect)
+                                                                        :stop
+                                                                        :stop+sh1))
+                                  :disabled? (not (signal/stop-aspect? current-aspect))
+                                  :active? (= :stop+sh1 current-aspect)} "Sh1/Ra12"))
+                     (when (:zs1? combination-main)
+                       ($ button {:on-click #(set-combination-aspect! (if (= :stop+zs1 current-aspect)
+                                                                        :stop
+                                                                        :stop+zs1))
+                                  :disabled? (not (signal/stop-aspect? current-aspect))
+                                  :active? (= :stop+zs1 current-aspect)} "Zs1"))
+                     (when (:zs7? combination-main)
+                       ($ button {:on-click #(set-combination-aspect! (if (= :stop+zs7 current-aspect)
+                                                                        :stop
+                                                                        :stop+zs7))
+                                  :disabled? (not (signal/stop-aspect? current-aspect))
+                                  :active? (= :stop+zs7 current-aspect)} "Zs7")))))
+             (let [main-state (:main main)
+                   current-aspect (:aspect main-state)]
+               ($ :td
+                  ($ button {:on-click #(set-main-aspect! :proceed)
+                             :active? (= :proceed current-aspect)
+                             :type "success"} "Fahrt")
+                  ($ :div.btn-group
+
+                     ($ button {:on-click #(set-main-aspect! :stop)
+                                :active? (signal/stop-aspect? current-aspect)
+                                :type "danger"} "Halt")
+                     (when (:sh1? main-state)
+                       ($ button {:on-click #(set-main-aspect! (if (= :stop+sh1 current-aspect)
+                                                                 :stop
+                                                                 :stop+sh1))
+                                  :disabled? (not (signal/stop-aspect? current-aspect))
+                                  :active? (= :stop+sh1 current-aspect)} "Sh1/Ra12"))
+                     (when (:zs1? main-state)
+                       ($ button {:on-click #(set-main-aspect! (if (= :stop+zs1 current-aspect)
+                                                                 :stop
+                                                                 :stop+zs1))
+                                  :disabled? (not (signal/stop-aspect? current-aspect))
+                                  :active? (= :stop+zs1 current-aspect)} "Zs1"))
+                     (when (:zs7? main-state)
+                       ($ button {:on-click #(set-main-aspect! (if (= :stop+zs7 current-aspect)
+                                                                 :stop
+                                                                 :stop+zs7))
+                                  :disabled? (not (signal/stop-aspect? current-aspect))
+                                  :active? (= :stop+zs7 current-aspect)} "Zs7"))))))
           ($ :tr
              ($ :td "Features")
-             ($ :td
-                ($ :button {:on-click #(set-distant! (assoc-in distant [:distant :distant-addition] (when-not (-> distant :distant :distant-addition (= :shortened-break-path))
-                                                                                                      :shortened-break-path)))} "Bremsweg >5% verkürzt"))
              ($ :td)
-             ($ :td
-                ($ :button {:on-click #(set-combination! (update-in combination [:main :sh1?] not))} "Sh1")
-                ($ :button {:on-click #(set-combination! (update-in combination [:main :zs1?] not))} "Zs1")
-                ($ :button {:on-click #(set-combination! (update-in combination [:main :zs7?] not))} "Zs7")
-                ($ :button {:on-click #(set-combination! (assoc-in combination [:distant :distant-addition] (when-not (-> combination :distant :distant-addition (= :shortened-break-path))
-                                                                                                              :shortened-break-path)))} "Bremsweg >5% verkürzt"))
-             ($ :td
-                ($ :button {:on-click #(set-main! (update-in main [:main :sh1?] not))} "Sh1")
-                ($ :button {:on-click #(set-main! (update-in main [:main :zs1?] not))} "Zs1")
-                ($ :button {:on-click #(set-main! (update-in main [:main :zs7?] not))} "Zs7"))))
+             ($ :td)
+             (let [combination-main (:main combination)
+                   shortened-break-path-active? (-> distant :distant :distant-addition (= :shortened-break-path))]
+               ($ :td
+                  ($ :div.btn-group
+                     ($ button {:on-click #(set-combination! (update-in combination [:main :sh1?] not))
+                                :type "info"
+                                :active? (:sh1? combination-main)} "Sh1/Ra12")
+                     ($ button {:on-click #(set-combination! (update-in combination [:main :zs1?] not))
+                                :type "info"
+                                :active? (:zs1? combination-main)} "Zs1")
+                     ($ button {:on-click #(set-combination! (update-in combination [:main :zs7?] not))
+                                :type "info"
+                                :active? (:zs7? combination-main)} "Zs7"))
+                  ($ :div
+                     ($ button {:on-click #(set-distant! (assoc-in distant [:distant :distant-addition] (when-not shortened-break-path-active? :shortened-break-path)))
+                                :active? shortened-break-path-active?
+                                :type "info"
+                                :title "Bremsweg um mehr als 5% kürzer als der Regelabstand"}
+                        "Kurzer Bremsweg"))))
+             (let [main-state (:main main)
+                   shortened-break-path-active? (-> combination :distant :distant-addition (= :shortened-break-path))]
+               ($ :td
+                  ($ :div.btn-group
+                     ($ button {:on-click #(set-main! (update-in main [:main :sh1?] not))
+                                :type "info"
+                                :active? (:sh1? main-state)} "Sh1/Ra12")
+                     ($ button {:on-click #(set-main! (update-in main [:main :zs1?] not))
+                                :type "info"
+                                :active? (:zs1? main-state)} "Zs1")
+                     ($ button {:on-click #(set-main! (update-in main [:main :zs7?] not))
+                                :type "info"
+                                :active? (:zs7? main-state)} "Zs7"))
+                  ($ :div
+                     ($ button {:on-click #(set-combination! (assoc-in combination [:distant :distant-addition] (when-not shortened-break-path-active? :shortened-break-path)))
+                                :active? shortened-break-path-active?
+                                :type "info"
+                                :title "Bremsweg um mehr als 5% kürzer als der Regelabstand"}
+                        "Kurzer Bremsweg"))))))
        ($ :tbody
           ($ :tr
              ($ :td)
