@@ -2,6 +2,7 @@
   (:require
    [signals.ks :as ks]
    [signals.signal :as signal]
+   [signals.zs3 :refer [zs3 zs3v]]
    [uix.core :as uix :refer [$ defui]]
    [uix.dom :as uix.dom]))
 
@@ -36,7 +37,11 @@
            :width "200"
            :height "600"}
      ($ defs)
-     ($ ks/view {:signal signal})))
+     ($ zs3 {:signal signal})
+     ($ :g {:transform "translate(3,65)"}
+        ($ ks/view {:signal signal}))
+     ($ :g {:transform "translate(0,168)"}
+        ($ zs3v {:signal signal}))))
 
 (defui button [{:keys [on-click active? children disabled? type title]
                 :or {type "primary"}}]
@@ -48,6 +53,51 @@
          :title title}
         children)
      " "))
+
+(defui speed-limit-btn [{:keys [set-state! speed-limit current]}]
+  ($ button {:on-click #(set-state! :speed-limit speed-limit)
+             :type (if (or (nil? speed-limit)
+                           (> speed-limit 60))
+                     "success"
+                     "warning")
+             :active? (= speed-limit (:speed-limit current))}
+     (if speed-limit speed-limit "∞")))
+
+(defui speed-limit-btns [{:keys [set-state! current]}]
+  ($ :td
+     ($ :div.btn-group
+        ($ button {:on-click #(set-state! :zs3 nil)
+                   :type "info"
+                   :active? (nil? (:zs3 current))} "Kein")
+        #_($ button {:on-click #(set-state! :zs3 :sign)
+                     :type "info"
+                     :active? (= :sign (:zs3 current))} "Tafel")
+        ($ button {:on-click #(set-state! :zs3 :display)
+                   :type "info"
+                   :active? (= :display (:zs3 current))} "Lichtsignal"))
+     ($ :div
+        ($ :div.btn-group
+           ($ speed-limit-btn {:set-state! set-state! :speed-limit nil :current current})
+           ($ speed-limit-btn {:set-state! set-state! :speed-limit 150 :current current})
+           ($ speed-limit-btn {:set-state! set-state! :speed-limit 140 :current current})
+           ($ speed-limit-btn {:set-state! set-state! :speed-limit 130 :current current})
+           ($ speed-limit-btn {:set-state! set-state! :speed-limit 120 :current current})))
+     ($ :div
+        ($ :div.btn-group
+           ($ speed-limit-btn {:set-state! set-state! :speed-limit 110 :current current})
+           ($ speed-limit-btn {:set-state! set-state! :speed-limit 100 :current current})
+           ($ speed-limit-btn {:set-state! set-state! :speed-limit 90 :current current})
+           ($ speed-limit-btn {:set-state! set-state! :speed-limit 80 :current current})
+           ($ speed-limit-btn {:set-state! set-state! :speed-limit 70 :current current})))
+
+     ($ :div
+        ($ :div.btn-group
+           ($ speed-limit-btn {:set-state! set-state! :speed-limit 60 :current current})
+           ($ speed-limit-btn {:set-state! set-state! :speed-limit 50 :current current})
+           ($ speed-limit-btn {:set-state! set-state! :speed-limit 40 :current current})
+           ($ speed-limit-btn {:set-state! set-state! :speed-limit 30 :current current})
+           ($ speed-limit-btn {:set-state! set-state! :speed-limit 20 :current current})
+           ($ speed-limit-btn {:set-state! set-state! :speed-limit 10 :current current})))))
 
 (defui demo []
   (let [[distant set-distant!] (uix/use-state (signal/distant {:system :ks}))
@@ -172,7 +222,20 @@
                                 :active? shortened-break-path-active?
                                 :type "info"
                                 :title "Bremsweg um mehr als 5% kürzer als der Regelabstand"}
-                        "Kurzer Bremsweg"))))))
+                        "Kurzer Bremsweg")))))
+          ($ :tr
+             ($ :td "Geschwindigkeit")
+             ($ :td)
+             ($ :td)
+             ($ speed-limit-btns {:set-state! (fn [attr val]
+                                                (set-combination! (assoc-in combination [:main attr] val))
+                                                (set-repeater! (assoc-in repeater [:distant (if (= attr :zs3) :zs3v attr)] val))
+                                                (set-distant! (assoc-in distant [:distant (if (= attr :zs3) :zs3v attr)] val)))
+                                  :current (:main combination)})
+             ($ speed-limit-btns {:set-state! (fn [attr val]
+                                                (set-main! (assoc-in main [:main attr] val))
+                                                (set-combination! (assoc-in combination [:distant (if (= attr :zs3) :zs3v attr)] val)))
+                                  :current (:main main)})))
        ($ :tbody
           ($ :tr
              ($ :td)
