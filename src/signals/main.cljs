@@ -63,15 +63,6 @@
                :title "Bremsweg um mehr als 5% kürzer als der Regelabstand"}
        "Kurzer Bremsweg")))
 
-(defui speed-limit-btn [{:keys [set-state! speed-limit current]}]
-  ($ button {:on-click #(set-state! :speed-limit speed-limit)
-             :type (if (or (nil? speed-limit)
-                           (> speed-limit 60))
-                     "success"
-                     "warning")
-             :active? (= speed-limit (:speed-limit current))}
-     (if speed-limit speed-limit "∞")))
-
 (defui feature-btns [{:keys [set-state! state]}]
   ($ :div.btn-group
      ($ button {:on-click #(set-state! (update-in state [:main :sh1?] not))
@@ -84,41 +75,52 @@
                 :type "info"
                 :active? (-> state :main :zs7?)} "Zs7")))
 
+(defui speed-limit-btn [{:keys [speed-limit set-state! state]}]
+  ($ button {:on-click #(set-state! :speed-limit speed-limit)
+             :type (if (or (nil? speed-limit)
+                           (> speed-limit 60))
+                     "success"
+                     "warning")
+             :active? (= speed-limit (-> state :main :speed-limit))
+             :disabled? (or (not (ks/speed-limit-available? state speed-limit))
+                              (signal/stop-aspect? (-> state :main :aspect)))}
+     (if speed-limit speed-limit "∞")))
+
 (defui speed-limit-btns [{:keys [set-state! state]}]
   ($ :<>
      ($ :div.btn-group
         ($ button {:on-click #(set-state! :zs3 nil)
                    :type "info"
-                   :active? (nil? (:zs3 state))} "Kein")
+                   :active? (nil? (-> state :main :zs3))} "Kein")
         #_($ button {:on-click #(set-state! :zs3 :sign)
                      :type "info"
-                     :active? (= :sign (:zs3 state))} "Tafel")
+                     :active? (= :sign (-> state :main :zs3))} "Tafel")
         ($ button {:on-click #(set-state! :zs3 :display)
                    :type "info"
-                   :active? (= :display (:zs3 state))} "Lichtsignal"))
+                   :active? (= :display (-> state :main :zs3 ))} "Lichtsignal"))
      ($ :div
         ($ :div.btn-group
-           ($ speed-limit-btn {:set-state! set-state! :speed-limit nil :current state})
-           ($ speed-limit-btn {:set-state! set-state! :speed-limit 150 :current state})
-           ($ speed-limit-btn {:set-state! set-state! :speed-limit 140 :current state})
-           ($ speed-limit-btn {:set-state! set-state! :speed-limit 130 :current state})
-           ($ speed-limit-btn {:set-state! set-state! :speed-limit 120 :current state})))
+           ($ speed-limit-btn {:speed-limit nil :set-state! set-state! :state state})
+           ($ speed-limit-btn {:speed-limit 150 :set-state! set-state! :state state})
+           ($ speed-limit-btn {:speed-limit 140 :set-state! set-state! :state state})
+           ($ speed-limit-btn {:speed-limit 130 :set-state! set-state! :state state})
+           ($ speed-limit-btn {:speed-limit 120 :set-state! set-state! :state state})))
      ($ :div
         ($ :div.btn-group
-           ($ speed-limit-btn {:set-state! set-state! :speed-limit 110 :current state})
-           ($ speed-limit-btn {:set-state! set-state! :speed-limit 100 :current state})
-           ($ speed-limit-btn {:set-state! set-state! :speed-limit 90 :current state})
-           ($ speed-limit-btn {:set-state! set-state! :speed-limit 80 :current state})
-           ($ speed-limit-btn {:set-state! set-state! :speed-limit 70 :current state})))
+           ($ speed-limit-btn {:speed-limit 110 :set-state! set-state! :state state})
+           ($ speed-limit-btn {:speed-limit 100 :set-state! set-state! :state state})
+           ($ speed-limit-btn {:speed-limit 90 :set-state! set-state! :state state})
+           ($ speed-limit-btn {:speed-limit 80 :set-state! set-state! :state state})
+           ($ speed-limit-btn {:speed-limit 70 :set-state! set-state! :state state})))
 
      ($ :div
         ($ :div.btn-group
-           ($ speed-limit-btn {:set-state! set-state! :speed-limit 60 :current state})
-           ($ speed-limit-btn {:set-state! set-state! :speed-limit 50 :current state})
-           ($ speed-limit-btn {:set-state! set-state! :speed-limit 40 :current state})
-           ($ speed-limit-btn {:set-state! set-state! :speed-limit 30 :current state})
-           ($ speed-limit-btn {:set-state! set-state! :speed-limit 20 :current state})
-           ($ speed-limit-btn {:set-state! set-state! :speed-limit 10 :current state})))))
+           ($ speed-limit-btn {:speed-limit 60 :set-state! set-state! :state state})
+           ($ speed-limit-btn {:speed-limit 50 :set-state! set-state! :state state})
+           ($ speed-limit-btn {:speed-limit 40 :set-state! set-state! :state state})
+           ($ speed-limit-btn {:speed-limit 30 :set-state! set-state! :state state})
+           ($ speed-limit-btn {:speed-limit 20 :set-state! set-state! :state state})
+           ($ speed-limit-btn {:speed-limit 10 :set-state! set-state! :state state})))))
 
 (defui demo []
   (let [[distant set-distant!] (uix/use-state (signal/distant {:system :ks}))
@@ -140,9 +142,17 @@
              ($ :th "Vorsignal")
              ($ :th "Wiederholer")
              ($ :th "Kombinationsignal")
-             ($ :th "Hauptsignal"))
+             ($ :th "Hauptsignal")))
+       ($ :tbody
           ($ :tr
-             ($ :td "Begriff")
+             ($ :th)
+             ($ :td ($ signal {:signal distant}))
+             ($ :td ($ signal {:signal repeater}))
+             ($ :td ($ signal {:signal combination}))
+             ($ :td ($ signal {:signal main}))))
+       ($ :tfoot
+          ($ :tr
+             ($ :th "Begriff")
              ($ :td)
              ($ :td)
              (let [combination-main (:main combination)
@@ -203,7 +213,7 @@
                                   :disabled? (not (signal/stop-aspect? current-aspect))
                                   :active? (= :stop+zs7 current-aspect)} "Zs7"))))))
           ($ :tr
-             ($ :td "Features")
+             ($ :th "Features")
              ($ :td)
              ($ :td)
              ($ :td
@@ -215,7 +225,7 @@
                 ($ :div
                    ($ shortened-break-path-btn {:set-state! set-combination! :state combination}))))
           ($ :tr
-             ($ :td "Geschwindigkeit")
+             ($ :th "Zs3")
              ($ :td)
              ($ :td)
              ($ :td
@@ -223,19 +233,12 @@
                                                    (set-combination! (assoc-in combination [:main attr] val))
                                                    (set-repeater! (assoc-in repeater [:distant (if (= attr :zs3) :zs3v attr)] val))
                                                    (set-distant! (assoc-in distant [:distant (if (= attr :zs3) :zs3v attr)] val)))
-                                     :state (:main combination)}))
+                                     :state combination}))
              ($ :td
                 ($ speed-limit-btns {:set-state! (fn [attr val]
                                                    (set-main! (assoc-in main [:main attr] val))
                                                    (set-combination! (assoc-in combination [:distant (if (= attr :zs3) :zs3v attr)] val)))
-                                     :state (:main main)}))))
-       ($ :tbody
-          ($ :tr
-             ($ :td)
-             ($ :td ($ signal {:signal distant}))
-             ($ :td ($ signal {:signal repeater}))
-             ($ :td ($ signal {:signal combination}))
-             ($ :td ($ signal {:signal main})))))))
+                                     :state main})))))))
 
 (defn render []
   (uix.dom/render ($ demo) (.getElementById js/document "app")))

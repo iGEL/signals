@@ -888,3 +888,46 @@
                                       :main {:aspect :proceed}
                                       :system :ks})
                  ks/lights))))))
+
+(deftest speed-limit-available?
+  (testing "without Zs3"
+    (is (ks/speed-limit-available?
+         (signal/main {:main {}
+                       :system :ks})
+         nil))
+
+    (is (ks/speed-limit-available?
+         (signal/combination {:main {}
+                              :system :ks})
+         nil))
+
+    (is (not (ks/speed-limit-available?
+              (signal/main {:main {}
+                            :system :ks})
+              100)))
+
+    (is (not (ks/speed-limit-available?
+              (signal/combination {:main {}
+                                   :system :ks})
+              100))))
+
+  (testing "with Zs3"
+    (is (ks/speed-limit-available?
+         (signal/main {:main {:zs3 :display}
+                       :system :ks})
+         nil))
+
+    (is (ks/speed-limit-available?
+         (signal/combination {:main {:zs3 :sign}
+                              :system :ks})
+         nil))
+
+    (is (ks/speed-limit-available?
+         (signal/main {:zs3 :sign
+                       :system :ks})
+         100))
+
+    (is (ks/speed-limit-available?
+         (signal/combination {:main {:zs3 :display}
+                              :system :ks})
+         100))))

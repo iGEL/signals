@@ -131,3 +131,10 @@
                 :size :small
                 :x 11.5
                 :y 98.7}))))
+
+(defn speed-limit-available? [{{:keys [zs3]} :main
+                               :as signal}
+                              limit]
+  {:pre [(p/arg! ::signal/signal signal)]}
+  (or zs3
+      (not limit)))
