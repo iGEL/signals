@@ -83,7 +83,8 @@
                      "warning")
              :active? (= speed-limit (-> state :main :speed-limit))
              :disabled? (or (not (ks/speed-limit-available? state speed-limit))
-                              (signal/stop-aspect? (-> state :main :aspect)))}
+                            (and (= :display (-> state :main :zs3))
+                                 (signal/stop-aspect? (-> state :main :aspect))))}
      (if speed-limit speed-limit "∞")))
 
 (defui speed-limit-btns [{:keys [set-state! state]}]
@@ -92,12 +93,15 @@
         ($ button {:on-click #(set-state! :zs3 nil)
                    :type "info"
                    :active? (nil? (-> state :main :zs3))} "Kein")
-        #_($ button {:on-click #(set-state! :zs3 :sign)
-                     :type "info"
-                     :active? (= :sign (-> state :main :zs3))} "Tafel")
+        ($ button {:on-click (fn []
+                               (set-state! :zs3 :sign)
+                               (when-not (-> state :main :speed-limit)
+                                 (set-state! :speed-limit 60)))
+                   :type "info"
+                   :active? (= :sign (-> state :main :zs3))} "Tafel")
         ($ button {:on-click #(set-state! :zs3 :display)
                    :type "info"
-                   :active? (= :display (-> state :main :zs3 ))} "Lichtsignal"))
+                   :active? (= :display (-> state :main :zs3))} "Lichtsignal"))
      ($ :div
         ($ :div.btn-group
            ($ speed-limit-btn {:speed-limit nil :set-state! set-state! :state state})

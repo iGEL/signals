@@ -918,9 +918,19 @@
          nil))
 
     (is (ks/speed-limit-available?
-         (signal/combination {:main {:zs3 :sign}
+         (signal/combination {:main {:zs3 :display}
                               :system :ks})
          nil))
+
+    (is (not (ks/speed-limit-available?
+              (signal/main {:main {:zs3 :sign}
+                            :system :ks})
+              nil)))
+
+    (is (not (ks/speed-limit-available?
+              (signal/combination {:main {:zs3 :sign}
+                                   :system :ks})
+              nil)))
 
     (is (ks/speed-limit-available?
          (signal/main {:zs3 :sign

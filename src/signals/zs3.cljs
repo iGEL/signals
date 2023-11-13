@@ -3,6 +3,7 @@
    [preo.core :as p]
    [signals.display :as display]
    [signals.signal :as signal]
+   [signals.zs3.sign :as zs3.sign]
    [uix.core :refer [$ defui]]))
 
 (defui zs3 [{{{:keys [zs3 speed-limit aspect]} :main
@@ -14,6 +15,8 @@
                                  :value (when (and (not (signal/stop-aspect? aspect))
                                                    speed-limit)
                                           (/ speed-limit 10))}))
+    :sign ($ zs3.sign/view {:position :main
+                            :value (/ speed-limit 10)})
     nil))
 
 (defui zs3v [{{{:keys [zs3v speed-limit]
@@ -28,4 +31,6 @@
                                                    (not (signal/stop-aspect? main-aspect))
                                                    speed-limit)
                                           (/ speed-limit 10))}))
+    :sign ($ zs3.sign/view {:position :distant
+                            :value (/ speed-limit 10)})
     nil))

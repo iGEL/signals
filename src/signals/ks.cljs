@@ -136,5 +136,7 @@
                                :as signal}
                               limit]
   {:pre [(p/arg! ::signal/signal signal)]}
-  (or zs3
-      (not limit)))
+  (case zs3
+    :display true
+    :sign limit
+    false))
