@@ -891,19 +891,17 @@
 
 (deftest speed-limit-available?
   (testing "without Zs3"
-    (is (ks/speed-limit-available?
-         (signal/main {:main {}
-                       :system :ks})
-         nil))
-
-    (is (ks/speed-limit-available?
-         (signal/combination {:main {}
-                              :system :ks})
-         nil))
+    (is (not (ks/speed-limit-available?
+              (signal/main {:system :ks})
+              nil)))
 
     (is (not (ks/speed-limit-available?
-              (signal/main {:main {}
-                            :system :ks})
+              (signal/combination {:main {}
+                                   :system :ks})
+              nil)))
+
+    (is (not (ks/speed-limit-available?
+              (signal/main {:system :ks})
               100)))
 
     (is (not (ks/speed-limit-available?
@@ -913,7 +911,7 @@
 
   (testing "with Zs3"
     (is (ks/speed-limit-available?
-         (signal/main {:main {:zs3 :display}
+         (signal/main {:zs3 :display
                        :system :ks})
          nil))
 
@@ -923,7 +921,7 @@
          nil))
 
     (is (not (ks/speed-limit-available?
-              (signal/main {:main {:zs3 :sign}
+              (signal/main {:zs3 :sign
                             :system :ks})
               nil)))
 
