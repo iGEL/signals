@@ -1,5 +1,6 @@
 (ns signals.main
   (:require
+   [signals.hv-light :as hv-light]
    [signals.ks :as ks]
    [signals.signal :as signal]
    [signals.zs3 :refer [zs3 zs3v]]
@@ -37,11 +38,20 @@
            :width "200"
            :height "600"}
      ($ defs)
-     ($ zs3 {:signal signal})
-     ($ :g {:transform "translate(3,65)"}
-        ($ ks/view {:signal signal}))
-     ($ :g {:transform "translate(0,168)"}
-        ($ zs3v {:signal signal}))))
+     (case (:system signal)
+       :ks ($ :<>
+              ($ zs3 {:signal signal})
+              ($ :g {:transform "translate(3,65)"}
+                 ($ ks/view {:signal signal}))
+              ($ :g {:transform "translate(0,168)"}
+                 ($ zs3v {:signal signal})))
+       :hv-light ($ :<>
+                    ($ :g {:transform "translate(19,0)"}
+                       ($ zs3 {:signal signal}))
+                    ($ :g {:transform "translate(3,65)"}
+                       ($ hv-light/view {:signal signal}))
+                    ($ :g {:transform "translate(19,350)"}
+                       ($ zs3v {:signal signal}))))))
 
 (defui button [{:keys [on-click active? children disabled? type title]
                 :or {type "primary"}}]
@@ -75,6 +85,11 @@
                 :type "info"
                 :active? (-> state :main :zs7?)} "Zs7")))
 
+(defn- speed-limit-available? [state limit]
+  (case (:system state)
+    :ks (ks/speed-limit-available? state limit)
+    :hv-light (hv-light/speed-limit-available? state limit)))
+
 (defui speed-limit-btn [{:keys [speed-limit set-state! state]}]
   ($ button {:on-click #(set-state! :speed-limit speed-limit)
              :type (if (or (nil? speed-limit)
@@ -82,13 +97,18 @@
                      "success"
                      "warning")
              :active? (= speed-limit (-> state :main :speed-limit))
-             :disabled? (or (not (ks/speed-limit-available? state speed-limit))
-                            (and (= :display (-> state :main :zs3))
-                                 (signal/stop-aspect? (-> state :main :aspect))))}
+             :disabled? (not (speed-limit-available? state speed-limit))}
      (if speed-limit speed-limit "∞")))
 
 (defui speed-limit-btns [{:keys [set-state! state]}]
   ($ :<>
+     (when (= :hv-light (:system state))
+       ($ :div
+          (let [active? (-> state :main :slow-speed-lights seq)]
+            ($ button {:on-click #(set-state! :slow-speed-lights (if active? [] [40]))
+                       :type "info"
+                       :active? active?}
+               "Langsamfahrt"))))
      ($ :div.btn-group
         ($ button {:on-click #(set-state! :zs3 nil)
                    :type "info"
@@ -145,7 +165,7 @@
              ($ :th)
              ($ :th "Vorsignal")
              ($ :th "Wiederholer")
-             ($ :th "Kombinationsignal")
+             ($ :th "Mehrabschnittssignal")
              ($ :th "Hauptsignal")))
        ($ :tbody
           ($ :tr
@@ -155,6 +175,21 @@
              ($ :td ($ signal {:signal combination}))
              ($ :td ($ signal {:signal main}))))
        ($ :tfoot
+          ($ :tr
+             ($ :th "System")
+             ($ :td {:col-span 4}
+                ($ button {:on-click (fn []
+                                       (set-distant! (assoc distant :system :ks))
+                                       (set-repeater! (assoc repeater :system :ks))
+                                       (set-combination! (assoc combination :system :ks))
+                                       (set-main! (assoc main :system :ks)))
+                           :active? (= :ks (:system main))} "Ks")
+                ($ button {:on-click (fn []
+                                       (set-distant! (assoc distant :system :hv-light))
+                                       (set-repeater! (assoc repeater :system :hv-light))
+                                       (set-combination! (assoc combination :system :hv-light))
+                                       (set-main! (assoc main :system :hv-light)))
+                           :active? (= :hv-light (:system main))} "H/V Lichtsignal")))
           ($ :tr
              ($ :th "Begriff")
              ($ :td)

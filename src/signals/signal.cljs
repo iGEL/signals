@@ -21,7 +21,7 @@
 (s/def ::distant (s/keys :req-un [::aspect ::speed-limit ::distant-addition ::slow-speed-lights ::zs3v]))
 
 (s/def ::type #{:distant :main :combination})
-(s/def ::system #{:ks})
+(s/def ::system #{:ks :hv-light})
 (s/def ::signal (s/keys :req-un [::type ::system]
                         :opt-un [::distant ::main]))
 
@@ -33,14 +33,14 @@
 
 (defn main
   "Constructor for a main signal"
-  [{:keys [aspect speed-limit sh1? zs1? zs3 zs7? system]
-    :or {aspect :stop sh1? false zs1? false zs3 nil zs7? false}}]
+  [{:keys [aspect speed-limit slow-speed-lights sh1? zs1? zs3 zs7? system]
+    :or {aspect :stop sh1? false zs1? false zs3 nil zs7? false slow-speed-lights []}}]
   {:post [(p/ret! ::signal %)]}
   {:system system
    :type :main
    :main {:aspect aspect
           :speed-limit speed-limit
-          :slow-speed-lights []
+          :slow-speed-lights slow-speed-lights
           :sh1? sh1?
           :zs1? zs1?
           :zs3 zs3
@@ -48,27 +48,29 @@
 
 (defn distant
   "Constructor for a distant signal"
-  [{:keys [aspect speed-limit distant-addition zs3v system]
-    :or {aspect :stop zs3v nil}}]
+  [{:keys [aspect speed-limit slow-speed-lights distant-addition zs3v system]
+    :or {aspect :stop zs3v nil slow-speed-lights []}}]
   {:post [(p/ret! ::signal %)]}
   {:system system
    :type :distant
    :distant {:aspect aspect
              :speed-limit speed-limit
              :distant-addition distant-addition
-             :slow-speed-lights []
+             :slow-speed-lights slow-speed-lights
              :zs3v zs3v}})
 
 (defn combination
   "Constructor for a combination of a main & distant signal"
   [{{distant-aspect :aspect
      distant-speed-limit :speed-limit
+     distant-slow-speed-lights :slow-speed-lights
      :keys [zs3v distant-addition]
-     :or {distant-aspect :stop zs3v nil}} :distant
+     :or {distant-aspect :stop zs3v nil distant-slow-speed-lights []}} :distant
     {main-aspect :aspect
      main-speed-limit :speed-limit
+     main-slow-speed-lights :slow-speed-lights
      :keys [sh1? zs1? zs3 zs7?]
-     :or {main-aspect :stop sh1? false zs1? false zs3 nil zs7? false}} :main
+     :or {main-aspect :stop sh1? false zs1? false zs3 nil zs7? false main-slow-speed-lights []}} :main
     system :system}]
   {:post [(p/ret! ::signal %)]}
   {:system system
@@ -76,11 +78,11 @@
    :distant {:aspect distant-aspect
              :speed-limit distant-speed-limit
              :distant-addition distant-addition
-             :slow-speed-lights []
+             :slow-speed-lights distant-slow-speed-lights
              :zs3v zs3v}
    :main {:aspect main-aspect
           :speed-limit main-speed-limit
-          :slow-speed-lights []
+          :slow-speed-lights main-slow-speed-lights
           :sh1? sh1?
           :zs1? zs1?
           :zs3 zs3
