@@ -2,6 +2,7 @@
   (:require
    [signals.hv-light :as hv-light]
    [signals.ks :as ks]
+   [signals.ne :as ne]
    [signals.signal :as signal]
    [signals.zs3 :refer [zs3 zs3v]]
    [uix.core :as uix :refer [$ defui]]
@@ -40,18 +41,27 @@
      ($ defs)
      (case (:system signal)
        :ks ($ :<>
+              ($ :g {:transform "translate(16,0)"})
               ($ zs3 {:signal signal})
-              ($ :g {:transform "translate(3,65)"}
+              ($ :g {:transform "translate(19,65)"}
                  ($ ks/view {:signal signal}))
-              ($ :g {:transform "translate(0,168)"}
-                 ($ zs3v {:signal signal})))
+              ($ :g {:transform "translate(16,168)"}
+                 ($ zs3v {:signal signal}))
+              (when (and (= :distant (:type signal))
+                         (not (= :repeater (-> signal :distant :distant-addition))))
+                ($ :g {:transform "translate(33,500)"}
+                   ($ ne/ne2))))
        :hv-light ($ :<>
                     ($ :g {:transform "translate(19,0)"}
                        ($ zs3 {:signal signal}))
                     ($ :g {:transform "translate(3,65)"}
                        ($ hv-light/view {:signal signal}))
                     ($ :g {:transform "translate(19,350)"}
-                       ($ zs3v {:signal signal}))))))
+                       ($ zs3v {:signal signal}))
+                    (when (and (= :distant (:type signal))
+                               (not (= :repeater (-> signal :distant :distant-addition))))
+                      ($ :g {:transform "translate(33,500)"}
+                         ($ ne/ne2)))))))
 
 (defui button [{:keys [on-click active? children disabled? type title]
                 :or {type "primary"}}]
