@@ -46,7 +46,8 @@
             :yellow (let [has-light? (some #{40} main-slow-speed-lights)]
                       (cond
                         (not has-light?) nil
-                        (and main-speed-limit (>= 60 main-speed-limit)) :on
+                        (and (not (signal/stop-aspect? main-aspect))
+                             main-speed-limit (>= 60 main-speed-limit)) :on
                         :else :off))
             :secondary-red (cond
                              (not sh1?) nil

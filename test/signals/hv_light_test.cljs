@@ -213,6 +213,7 @@
         (is (= (merge no-hp vr0)
                (-> (signal/distant {:aspect :stop
                                     :slow-speed-lights [40]
+                                    :speed-limit 40
                                     :system :hv-light})
                    hv/lights))))
 
@@ -220,6 +221,7 @@
         (is (= (merge no-hp (add-to-distant vr0 {:white :on}))
                (-> (signal/distant {:aspect :stop
                                     :slow-speed-lights [40]
+                                    :speed-limit 40
                                     :distant-addition :repeater
                                     :system :hv-light})
                    hv/lights))))
@@ -228,20 +230,23 @@
         (is (= (merge hp0-with-yellow no-vr)
                (-> (signal/main {:aspect :stop
                                  :slow-speed-lights [40]
+                                 :speed-limit 40
                                  :system :hv-light})
                    hv/lights))))
 
       (testing "combination shows hp0"
         (is (= (merge hp0-with-yellow vr-off)
                (-> (signal/combination {:main {:aspect :stop
-                                               :slow-speed-lights [40]}
+                                               :slow-speed-lights [40]
+                                               :speed-limit 40}
                                         :distant {:aspect :stop}
                                         :system :hv-light})
                    hv/lights)))
 
         (is (= (merge hp0-with-yellow vr-off)
                (-> (signal/combination {:main {:aspect :stop
-                                               :slow-speed-lights [40]}
+                                               :slow-speed-lights [40]
+                                               :speed-limit 40}
                                         :distant {:aspect :proceed}
                                         :system :hv-light})
                    hv/lights)))))
