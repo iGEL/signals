@@ -21,7 +21,7 @@
 (s/def ::distant (s/keys :req-un [::aspect ::speed-limit ::distant-addition ::slow-speed-lights ::zs3v]))
 
 (s/def ::type #{:distant :main :combination})
-(s/def ::system #{:ks :hv-light})
+(s/def ::system #{:ks :hv-light :hv-semaphore})
 (s/def ::signal (s/keys :req-un [::type ::system]
                         :opt-un [::distant ::main]))
 

@@ -66,3 +66,16 @@ circle.on.blinking
   opacity: 0.768
 .semaphoreAnimate
   transition: transform 2s
+  &.main-arm
+    &.horizontal
+      transform translate(11px,11px) rotate(0deg)
+    &.inclined
+      transform translate(11px,11px) rotate(-45deg)
+    &.vertical
+      transform translate(11px,11px) rotate(-90deg)
+
+  &.main-lights
+    &.horizontal
+      transform translate(36px,0px) rotate(0deg)
+    &.inclined
+      transform translate(0px,0px) rotate(-45deg)

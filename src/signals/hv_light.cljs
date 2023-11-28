@@ -91,9 +91,9 @@
                                   slow-speed? :on
                                   :else :off)}))})
 
-(defui zs1+zs7-view [{:keys [zs1 zs7 sh1]}]
+(defui zs1+zs7-view [{:keys [zs1 zs7]}]
   (when (or zs1 zs7)
-    ($ :g {:transform (str "translate(34," (if sh1 136 147) ")")}
+    ($ :<>
        ($ :rect {:width 35, :height 33, :x 0, :y 0})
        ($ lamp/lamp {:color :white
                      :state zs1
@@ -170,7 +170,8 @@
                             :size :big
                             :x 38
                             :y 105})
-              ($ zs1+zs7-view main))
+              ($ :g {:transform (str "translate(34," (if sh1 136 147) ")")}
+                 ($ zs1+zs7-view main)))
            ($ :<>
               ($ :rect {:width 65
                         :height 145
@@ -193,7 +194,9 @@
                             :size :big
                             :x 60
                             :y 126})
-              ($ zs1+zs7-view main))))
+
+              ($ :g {:transform (str "translate(34," (if sh1 136 147) ")")}
+                 ($ zs1+zs7-view main)))))
        (when (:distant signal)
          ($ :<>
             ($ :path {:d "m 0,256.82806 0,28.15532 16.4938603,15.11883 29.3079287,0 58.748797,-60.73876 0,-28.18838 -15.93946,-14.32876 -29.307928,0 z"})

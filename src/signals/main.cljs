@@ -1,6 +1,7 @@
 (ns signals.main
   (:require
    [signals.hv-light :as hv-light]
+   [signals.hv-semaphore :as hv-semaphore]
    [signals.ks :as ks]
    [signals.ne :as ne]
    [signals.signal :as signal]
@@ -61,7 +62,18 @@
                     (when (and (= :distant (:type signal))
                                (not (= :repeater (-> signal :distant :distant-addition))))
                       ($ :g {:transform "translate(33,500)"}
-                         ($ ne/ne2)))))))
+                         ($ ne/ne2))))
+       :hv-semaphore ($ :<>
+                        ($ :g {:transform "translate(19,0)"}
+                           ($ zs3 {:signal signal}))
+                        ($ :g {:transform "translate(3,65)"}
+                           ($ hv-semaphore/view {:signal signal}))
+                        ($ :g {:transform "translate(19,350)"}
+                           ($ zs3v {:signal signal}))
+                        (when (and (= :distant (:type signal))
+                                   (not (= :repeater (-> signal :distant :distant-addition))))
+                          ($ :g {:transform "translate(33,500)"}
+                             ($ ne/ne2)))))))
 
 (defui button [{:keys [on-click active? children disabled? type title]
                 :or {type "primary"}}]
@@ -98,7 +110,8 @@
 (defn- speed-limit-available? [state limit]
   (case (:system state)
     :ks (ks/speed-limit-available? state limit)
-    :hv-light (hv-light/speed-limit-available? state limit)))
+    :hv-light (hv-light/speed-limit-available? state limit)
+    :hv-semaphore (hv-light/speed-limit-available? state limit)))
 
 (defui speed-limit-btn [{:keys [speed-limit set-state! state]}]
   ($ button {:on-click #(set-state! :speed-limit speed-limit)
@@ -112,7 +125,7 @@
 
 (defui speed-limit-btns [{:keys [set-state! state]}]
   ($ :<>
-     (when (= :hv-light (:system state))
+     (when (#{:hv-light :hv-semaphore} (:system state))
        ($ :div
           (let [active? (-> state :main :slow-speed-lights seq)]
             ($ button {:on-click #(set-state! :slow-speed-lights (if active? [] [40]))
@@ -188,6 +201,9 @@
           ($ :tr
              ($ :th "System")
              ($ :td {:col-span 4}
+                (when (= :hv-semaphore (:system main))
+                  ($ :div.alert.alert-warning {:role "alert"}
+                     "Positionierung der einzelnen Signale und Animationen sind noch unfertig"))
                 ($ button {:on-click (fn []
                                        (set-distant! (assoc distant :system :ks))
                                        (set-repeater! (assoc repeater :system :ks))
@@ -199,7 +215,13 @@
                                        (set-repeater! (assoc repeater :system :hv-light))
                                        (set-combination! (assoc combination :system :hv-light))
                                        (set-main! (assoc main :system :hv-light)))
-                           :active? (= :hv-light (:system main))} "H/V Lichtsignal")))
+                           :active? (= :hv-light (:system main))} "H/V Lichtsignal")
+                ($ button {:on-click (fn []
+                                       (set-distant! (assoc distant :system :hv-semaphore))
+                                       (set-repeater! (assoc repeater :system :hv-light))
+                                       (set-combination! (assoc combination :system :hv-semaphore))
+                                       (set-main! (assoc main :system :hv-semaphore)))
+                           :active? (= :hv-semaphore (:system main))} "H/V Formsignal")))
           ($ :tr
              ($ :th "Begriff")
              ($ :td)
