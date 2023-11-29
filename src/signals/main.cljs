@@ -1,5 +1,6 @@
 (ns signals.main
   (:require
+   [signals.hl :as hl]
    [signals.hv-light :as hv-light]
    [signals.hv-semaphore :as hv-semaphore]
    [signals.ks :as ks]
@@ -52,6 +53,7 @@
                          (not (= :repeater (-> signal :distant :distant-addition))))
                 ($ :g {:transform "translate(33,500)"}
                    ($ ne/ne2))))
+       :hl ($ hl/view {:signal signal})
        :hv-light ($ :<>
                     ($ :g {:transform "translate(19,0)"}
                        ($ zs3 {:signal signal}))
@@ -103,13 +105,15 @@
      ($ button {:on-click #(set-state! (update-in state [:main :zs1?] not))
                 :type "info"
                 :active? (-> state :main :zs1?)} "Zs1")
-     ($ button {:on-click #(set-state! (update-in state [:main :zs7?] not))
-                :type "info"
-                :active? (-> state :main :zs7?)} "Zs7")))
+     (when-not (= :hl (:system state))
+       ($ button {:on-click #(set-state! (update-in state [:main :zs7?] not))
+                  :type "info"
+                  :active? (-> state :main :zs7?)} "Zs7"))))
 
 (defn- speed-limit-available? [state limit]
   (case (:system state)
     :ks (ks/speed-limit-available? state limit)
+    :hl (hl/speed-limit-available? state limit)
     :hv-light (hv-light/speed-limit-available? state limit)
     :hv-semaphore (hv-light/speed-limit-available? state limit)))
 
@@ -136,15 +140,43 @@
         ($ button {:on-click #(set-state! :zs3 nil)
                    :type "info"
                    :active? (nil? (-> state :main :zs3))} "Kein")
-        ($ button {:on-click (fn []
-                               (set-state! :zs3 :sign)
-                               (when-not (-> state :main :speed-limit)
-                                 (set-state! :speed-limit 60)))
-                   :type "info"
-                   :active? (= :sign (-> state :main :zs3))} "Tafel")
-        ($ button {:on-click #(set-state! :zs3 :display)
-                   :type "info"
-                   :active? (= :display (-> state :main :zs3))} "Lichtsignal"))
+        (if (= :hl (:system state))
+          (let [slow-speed-lights (-> state :main :slow-speed-lights)
+                active-40? (some #{40} slow-speed-lights)
+                active-60? (some #{60} slow-speed-lights)
+                active-100? (some #{100} slow-speed-lights)]
+            ($ :<>
+               ($ button {:on-click (fn []
+                                      (set-state! :slow-speed-lights (if active-40?
+                                                                       (filterv #(not= 40 %) slow-speed-lights)
+                                                                       (conj slow-speed-lights 40))))
+                          :type "info"
+                          :active? active-40?}
+                  "40")
+               ($ button {:on-click (fn []
+                                      (set-state! :slow-speed-lights (if active-60?
+                                                                       (filterv #(not= 60 %) slow-speed-lights)
+                                                                       (conj slow-speed-lights 60))))
+                          :type "info"
+                          :active? active-60?}
+                  "60")
+               ($ button {:on-click (fn []
+                                      (set-state! :slow-speed-lights (if active-100?
+                                                                       (filterv #(not= 100 %) slow-speed-lights)
+                                                                       (conj slow-speed-lights 100))))
+                          :type "info"
+                          :active? active-100?}
+                  "100")))
+          ($ :<>
+             ($ button {:on-click (fn []
+                                    (set-state! :zs3 :sign)
+                                    (when-not (-> state :main :speed-limit)
+                                      (set-state! :speed-limit 60)))
+                        :type "info"
+                        :active? (= :sign (-> state :main :zs3))} "Tafel")
+             ($ button {:on-click #(set-state! :zs3 :display)
+                        :type "info"
+                        :active? (= :display (-> state :main :zs3))} "Lichtsignal"))))
      ($ :div
         ($ :div.btn-group
            ($ speed-limit-btn {:speed-limit nil :set-state! set-state! :state state})
@@ -221,7 +253,13 @@
                                        (set-repeater! (assoc repeater :system :hv-light))
                                        (set-combination! (assoc combination :system :hv-semaphore))
                                        (set-main! (assoc main :system :hv-semaphore)))
-                           :active? (= :hv-semaphore (:system main))} "H/V Formsignal")))
+                           :active? (= :hv-semaphore (:system main))} "H/V Formsignal")
+                ($ button {:on-click (fn []
+                                       (set-distant! (assoc distant :system :hl))
+                                       (set-repeater! (assoc repeater :system :hl))
+                                       (set-combination! (assoc combination :system :hl))
+                                       (set-main! (assoc main :system :hl)))
+                           :active? (= :hl (:system main))} "Hl")))
           ($ :tr
              ($ :th "Begriff")
              ($ :td)
