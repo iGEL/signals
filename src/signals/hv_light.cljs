@@ -235,6 +235,6 @@
   (cond
     (= :display zs3) true
     (= :sign zs3) limit
-    (some #{40} slow-speed-lights) (or (nil? limit)
-                                       (= 40 limit))
+    (nil? limit) true
+    (some #{40} slow-speed-lights) (= 40 limit)
     :else false))

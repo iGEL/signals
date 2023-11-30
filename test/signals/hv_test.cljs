@@ -1184,9 +1184,9 @@
 
 (deftest speed-limit-available?
   (testing "without Zs3 / slow-speed-light"
-    (is (not (hv-light/speed-limit-available?
-              (signal/main {:system :hv-light})
-              nil)))
+    (is (hv-light/speed-limit-available?
+         (signal/main {:system :hv-light})
+         nil))
 
     (is (not (hv-light/speed-limit-available?
               (signal/main {:system :hv-light})

@@ -43,8 +43,8 @@
      ($ defs)
      (case (:system signal)
        :ks ($ :<>
-              ($ :g {:transform "translate(16,0)"})
-              ($ zs3 {:signal signal})
+              ($ :g {:transform "translate(16,0)"}
+                 ($ zs3 {:signal signal}))
               ($ :g {:transform "translate(19,65)"}
                  ($ ks/view {:signal signal}))
               ($ :g {:transform "translate(16,168)"}
@@ -53,7 +53,12 @@
                          (not (= :repeater (-> signal :distant :distant-addition))))
                 ($ :g {:transform "translate(33,500)"}
                    ($ ne/ne2))))
-       :hl ($ hl/view {:signal signal})
+
+       :hl ($ :<> ($ hl/view {:signal signal})
+              (when (and (= :distant (:type signal))
+                         (not (= :repeater (-> signal :distant :distant-addition))))
+                ($ :g {:transform "translate(17,500)"}
+                   ($ ne/ne2 {:shortened-break-path? (-> signal hl/lights :shortened-break-path?)}))))
        :hv-light ($ :<>
                     ($ :g {:transform "translate(19,0)"}
                        ($ zs3 {:signal signal}))
@@ -75,7 +80,7 @@
                         (when (and (= :distant (:type signal))
                                    (not (= :repeater (-> signal :distant :distant-addition))))
                           ($ :g {:transform "translate(33,500)"}
-                             ($ ne/ne2)))))))
+                             ($ ne/ne2 {:shortened-break-path? (-> signal hv-semaphore/arms :distant :shortened-break-path?)})))))))
 
 (defui button [{:keys [on-click active? children disabled? type title]
                 :or {type "primary"}}]
@@ -137,9 +142,6 @@
                        :active? active?}
                "Langsamfahrt"))))
      ($ :div.btn-group
-        ($ button {:on-click #(set-state! :zs3 nil)
-                   :type "info"
-                   :active? (nil? (-> state :main :zs3))} "Kein")
         (if (= :hl (:system state))
           (let [slow-speed-lights (-> state :main :slow-speed-lights)
                 active-40? (some #{40} slow-speed-lights)
@@ -168,6 +170,9 @@
                           :active? active-100?}
                   "100")))
           ($ :<>
+             ($ button {:on-click #(set-state! :zs3 nil)
+                        :type "info"
+                        :active? (nil? (-> state :main :zs3))} "Kein")
              ($ button {:on-click (fn []
                                     (set-state! :zs3 :sign)
                                     (when-not (-> state :main :speed-limit)
@@ -233,33 +238,34 @@
           ($ :tr
              ($ :th "System")
              ($ :td {:col-span 4}
+                ($ :div
+                   ($ button {:on-click (fn []
+                                          (set-distant! (assoc distant :system :ks))
+                                          (set-repeater! (assoc repeater :system :ks))
+                                          (set-combination! (assoc combination :system :ks))
+                                          (set-main! (assoc main :system :ks)))
+                              :active? (= :ks (:system main))} "Ks")
+                   ($ button {:on-click (fn []
+                                          (set-distant! (assoc distant :system :hv-light))
+                                          (set-repeater! (assoc repeater :system :hv-light))
+                                          (set-combination! (assoc combination :system :hv-light))
+                                          (set-main! (assoc main :system :hv-light)))
+                              :active? (= :hv-light (:system main))} "H/V Lichtsignal")
+                   ($ button {:on-click (fn []
+                                          (set-distant! (assoc distant :system :hv-semaphore))
+                                          (set-repeater! (assoc repeater :system :hv-light))
+                                          (set-combination! (assoc combination :system :hv-semaphore))
+                                          (set-main! (assoc main :system :hv-semaphore)))
+                              :active? (= :hv-semaphore (:system main))} "H/V Formsignal")
+                   ($ button {:on-click (fn []
+                                          (set-distant! (assoc distant :system :hl))
+                                          (set-repeater! (assoc repeater :system :hl))
+                                          (set-combination! (assoc combination :system :hl))
+                                          (set-main! (assoc main :system :hl)))
+                              :active? (= :hl (:system main))} "Hl"))
                 (when (= :hv-semaphore (:system main))
                   ($ :div.alert.alert-warning {:role "alert"}
-                     "Positionierung der einzelnen Signale und Animationen sind noch unfertig"))
-                ($ button {:on-click (fn []
-                                       (set-distant! (assoc distant :system :ks))
-                                       (set-repeater! (assoc repeater :system :ks))
-                                       (set-combination! (assoc combination :system :ks))
-                                       (set-main! (assoc main :system :ks)))
-                           :active? (= :ks (:system main))} "Ks")
-                ($ button {:on-click (fn []
-                                       (set-distant! (assoc distant :system :hv-light))
-                                       (set-repeater! (assoc repeater :system :hv-light))
-                                       (set-combination! (assoc combination :system :hv-light))
-                                       (set-main! (assoc main :system :hv-light)))
-                           :active? (= :hv-light (:system main))} "H/V Lichtsignal")
-                ($ button {:on-click (fn []
-                                       (set-distant! (assoc distant :system :hv-semaphore))
-                                       (set-repeater! (assoc repeater :system :hv-light))
-                                       (set-combination! (assoc combination :system :hv-semaphore))
-                                       (set-main! (assoc main :system :hv-semaphore)))
-                           :active? (= :hv-semaphore (:system main))} "H/V Formsignal")
-                ($ button {:on-click (fn []
-                                       (set-distant! (assoc distant :system :hl))
-                                       (set-repeater! (assoc repeater :system :hl))
-                                       (set-combination! (assoc combination :system :hl))
-                                       (set-main! (assoc main :system :hl)))
-                           :active? (= :hl (:system main))} "Hl")))
+                     "Positionierung der einzelnen Signale und Animationen müssen noch überarbeitet werden."))))
           ($ :tr
              ($ :th "Begriff")
              ($ :td)
@@ -334,7 +340,9 @@
                 ($ :div
                    ($ shortened-break-path-btn {:set-state! set-combination! :state combination}))))
           ($ :tr
-             ($ :th "Zs3")
+             ($ :th "Geschwindigkeits-"
+                ($ :br)
+                "begrenzung")
              ($ :td)
              ($ :td)
              ($ :td

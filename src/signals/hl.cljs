@@ -85,16 +85,16 @@
      :shortened-break-path? (= :shortened-break-path distant-addition)}))
 
 (defui stripe-lamp [{:keys [x color yellow-stripe green-stripe]}]
-  ($ lamp/lamp {:color color
-                :state (if (= :green color)
-                         green-stripe
-                         yellow-stripe)
-                :size :small
-                :x x
-                :y (if (and (= :green color)
-                            yellow-stripe)
-                     200
-                     227)}))
+  ($ lamp {:color color
+           :state (if (= :green color)
+                    green-stripe
+                    yellow-stripe)
+           :size :small
+           :x x
+           :y (if (and (= :green color)
+                       yellow-stripe)
+                200
+                227)}))
 
 (defui view [{:keys [signal]}]
   {:pre [(p/arg! ::signal/signal signal)]}
@@ -104,41 +104,41 @@
        ($ :path {:d (if red
                       "M 0,9 8,0 62,0 l 9,9 0,175 -72,0 z"
                       "M -0,9 8,0 62,0 l 9,9 0,122 -72,0 z")})
-       ($ lamp/lamp {:color :yellow
-                     :state top-yellow
-                     :size :big
-                     :x 20
-                     :y 30})
-       ($ lamp/lamp {:color :green
-                     :state top-green
-                     :size :big
-                     :x 50
-                     :y 30})
-       ($ lamp/lamp {:color :white
-                     :state top-white
-                     :size :small
-                     :x 53
-                     :y 63})
-       ($ lamp/lamp {:color :red
-                     :state red
-                     :size :big
-                     :x 35
-                     :y 82})
-       ($ lamp/lamp {:color :white
-                     :state bottom-white
-                     :size :small
-                     :x 14
-                     :y 99})
-       ($ lamp/lamp {:color :yellow
-                     :state bottom-yellow
-                     :size :big
-                     :x 20
-                     :y 136})
-       ($ lamp/lamp {:color :red
-                     :state replacement-red
-                     :size :big
-                     :x 50
-                     :y 136})
+       ($ lamp {:color :yellow
+                :state top-yellow
+                :size :big
+                :x 20
+                :y 30})
+       ($ lamp {:color :green
+                :state top-green
+                :size :big
+                :x 50
+                :y 30})
+       ($ lamp {:color :white
+                :state top-white
+                :size :small
+                :x 53
+                :y 63})
+       ($ lamp {:color :red
+                :state red
+                :size :big
+                :x 35
+                :y 82})
+       ($ lamp {:color :white
+                :state bottom-white
+                :size :small
+                :x 14
+                :y 99})
+       ($ lamp {:color :yellow
+                :state bottom-yellow
+                :size :big
+                :x 20
+                :y 136})
+       ($ lamp {:color :red
+                :state replacement-red
+                :size :big
+                :x 50
+                :y 136})
        (when (or yellow-stripe green-stripe)
          (let [green {:color :green
                       :yellow-stripe yellow-stripe
@@ -166,6 +166,5 @@
   (let [speeds (-> slow-speed-lights
                    set
                    (intersection #{40 60 100}))]
-    (or (and (nil? limit)
-             (seq speeds))
+    (or (nil? limit)
         (speeds limit))))

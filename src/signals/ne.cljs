@@ -2,9 +2,9 @@
   (:require
    [uix.core :refer [$ defui]]))
 
-(defui ne2 [{:keys [semaphore+shortened-break-path?]}]
+(defui ne2 [{:keys [shortened-break-path?]}]
   ($ :g
-     (when semaphore+shortened-break-path?
+     (when shortened-break-path?
        ($ :path.ral9002 {:d "m1,-23 17,20 17,-20 z"
                          :style {:stroke "#0e0e10"
                                  :stroke-width 2}}))

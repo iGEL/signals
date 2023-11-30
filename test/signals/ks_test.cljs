@@ -955,14 +955,14 @@
 
 (deftest speed-limit-available?
   (testing "without Zs3"
-    (is (not (ks/speed-limit-available?
-              (signal/main {:system :ks})
-              nil)))
+    (is (ks/speed-limit-available?
+         (signal/main {:system :ks})
+         nil))
 
-    (is (not (ks/speed-limit-available?
-              (signal/combination {:main {}
-                                   :system :ks})
-              nil)))
+    (is (ks/speed-limit-available?
+         (signal/combination {:main {}
+                              :system :ks})
+         nil))
 
     (is (not (ks/speed-limit-available?
               (signal/main {:system :ks})

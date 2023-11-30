@@ -139,4 +139,4 @@
   (case zs3
     :display true
     :sign limit
-    false))
+    (nil? limit)))

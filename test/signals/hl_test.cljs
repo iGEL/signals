@@ -1305,14 +1305,14 @@
 
 (deftest speed-limit-available?
   (testing "without slow-speed-lights"
-    (is (not (hl/speed-limit-available?
-              (signal/main {:system :hl})
-              nil)))
+    (is (hl/speed-limit-available?
+         (signal/main {:system :hl})
+         nil))
 
-    (is (not (hl/speed-limit-available?
-              (signal/combination {:main {}
-                                   :system :hl})
-              nil)))
+    (is (hl/speed-limit-available?
+         (signal/combination {:main {}
+                              :system :hl})
+         nil))
 
     (is (not (hl/speed-limit-available?
               (signal/main {:system :hl})
