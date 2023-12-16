@@ -1,6 +1,7 @@
 (ns signals.main
   (:require
    [clojure.pprint :refer [pprint]]
+   [clojure.string :as str]
    [signals.bootstrap :refer [button modal]]
    [signals.helper :refer [stop-aspect?]]
    [signals.hl :as hl]
@@ -48,14 +49,14 @@
     :hv-semaphore (hv-light/speed-limit-available? state limit)))
 
 (defui speed-limit-btn [{:keys [speed-limit set-state! state]}]
-  ($ button {:on-click #(set-state! :speed-limit speed-limit)
-             :type (if (or (nil? speed-limit)
-                           (> speed-limit 60))
-                     "success"
-                     "warning")
-             :active? (= speed-limit (-> state :main :speed-limit))
-             :disabled? (not (speed-limit-available? state speed-limit))}
-     (if speed-limit speed-limit "∞")))
+  (when (speed-limit-available? state speed-limit)
+    ($ button {:on-click #(set-state! :speed-limit speed-limit)
+               :type (if (or (nil? speed-limit)
+                             (> speed-limit 60))
+                       "success"
+                       "warning")
+               :active? (= speed-limit (-> state :main :speed-limit))}
+       (if speed-limit speed-limit "∞"))))
 
 (defui speed-limit-btns [{:keys [set-state! state]}]
   ($ :<>
@@ -107,29 +108,36 @@
              ($ button {:on-click #(set-state! :zs3 :display)
                         :type "info"
                         :active? (= :display (-> state :main :zs3))} "Lichtsignal"))))
-     ($ :div
-        ($ :div.btn-group
-           ($ speed-limit-btn {:speed-limit nil :set-state! set-state! :state state})
-           ($ speed-limit-btn {:speed-limit 150 :set-state! set-state! :state state})
-           ($ speed-limit-btn {:speed-limit 140 :set-state! set-state! :state state})
-           ($ speed-limit-btn {:speed-limit 130 :set-state! set-state! :state state})
-           ($ speed-limit-btn {:speed-limit 120 :set-state! set-state! :state state})))
-     ($ :div
-        ($ :div.btn-group
-           ($ speed-limit-btn {:speed-limit 110 :set-state! set-state! :state state})
-           ($ speed-limit-btn {:speed-limit 100 :set-state! set-state! :state state})
-           ($ speed-limit-btn {:speed-limit 90 :set-state! set-state! :state state})
-           ($ speed-limit-btn {:speed-limit 80 :set-state! set-state! :state state})
-           ($ speed-limit-btn {:speed-limit 70 :set-state! set-state! :state state})))
-
-     ($ :div
-        ($ :div.btn-group
-           ($ speed-limit-btn {:speed-limit 60 :set-state! set-state! :state state})
-           ($ speed-limit-btn {:speed-limit 50 :set-state! set-state! :state state})
-           ($ speed-limit-btn {:speed-limit 40 :set-state! set-state! :state state})
-           ($ speed-limit-btn {:speed-limit 30 :set-state! set-state! :state state})
-           ($ speed-limit-btn {:speed-limit 20 :set-state! set-state! :state state})
-           ($ speed-limit-btn {:speed-limit 10 :set-state! set-state! :state state})))))
+     (let [speeds (->> [nil 150 140 130 120 110 100 90 80 70 60 50 40 30 20 10]
+                       (filter
+                        (partial speed-limit-available? state))
+                       (reduce ; Group speeds into groups with up to 12 characters.
+                        (fn [prev speed]
+                           ; Add the item to the last group, if the str length
+                           ; of the items is 12 or less letters, otherwise open
+                           ; a new group
+                          (let [current-group (last prev)
+                                current-group-length (->> current-group
+                                                          (map str)
+                                                          str/join
+                                                          count
+                                                          (+ (count (str speed))))]
+                            (if (< current-group-length 13)
+                              (conj (-> prev butlast vec)
+                                    (conj current-group speed))
+                              (conj prev [speed]))))
+                        [[]]))]
+       (doall
+        (map-indexed (fn [group-idx group]
+                       ($ :div {:key (str "speed-limit-group-" group-idx)}
+                          ($ :div.btn-group
+                             (map-indexed (fn [speed-idx speed]
+                                            ($ speed-limit-btn {:key (str "speed-limit-btn-" speed-idx)
+                                                                :speed-limit speed
+                                                                :set-state! set-state!
+                                                                :state state}))
+                                          group))))
+                     speeds)))))
 
 (defui demo []
   (let [[distant set-distant!] (uix/use-state (signal/distant {:system :ks}))
