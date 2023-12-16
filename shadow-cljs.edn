@@ -3,7 +3,9 @@
  :builds {:app {:target :browser
                 :output-dir "public/js"
                 :asset-path "/js"
-                :modules {:main {:init-fn signals.main/init}}}
+                :modules {:main {:entries [signals.main]
+                                 :init-fn signals.main/init}}
+                :devtools {:preloads [preload devtools.preload]}}
           :test {:target :node-test
                  :output-to "out/tests.js"
                  :autorun true}}}

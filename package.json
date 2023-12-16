@@ -4,18 +4,17 @@
     "check-fmt": "clojure -M:nsorg-check src test && clojure -M:cljfmt-check src *.edn test",
     "lint": "clojure -M:lint",
     "test": "shadow-cljs compile test",
-    "watch-cljs": "shadow-cljs watch app",
+    "watch-cljs": "shadow-cljs -A:dev watch app",
     "build-cljs": "shadow-cljs compile app",
     "watch-stylus": "stylus --include-css -c -I src -I node_modules -o public/signals.css -w -m src/signals/signals.styl",
     "build-stylus": "stylus --include-css -c -I src -I node_modules -o public/signals.css -m src/signals/signals.styl",
     "watch-test": "shadow-cljs watch test"
   },
   "devDependencies": {
-    "shadow-cljs": "2.25.10"
-  },
-  "dependencies": {
+    "shadow-cljs": "2.25.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-refresh": "^0.14.0",
     "stylus": "^0.60.0"
   },
   "license": "UNLICENSED",

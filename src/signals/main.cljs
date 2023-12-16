@@ -338,11 +338,10 @@
                              :on-click #(set-modal-open! true)}
                      "🐛 Bug melden"))))))))
 
-(defn render []
-  (uix.dom/render ($ demo) (.getElementById js/document "app")))
+(defonce root (uix.dom/create-root (js/document.getElementById "app")))
 
-(defn ^:dev/after-load reload []
-  (render))
+(defn render []
+  (uix.dom/render-root ($ demo) root))
 
 (defn ^:export init []
   (render))
