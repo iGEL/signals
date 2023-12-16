@@ -285,8 +285,8 @@
              (let [[modal-open? set-modal-open!] (uix/use-state false)
                    [copied? set-copied!] (uix/use-state false)
                    close-modal (fn []
-                           (set-copied! false)
-                           (set-modal-open! false))
+                                 (set-copied! false)
+                                 (set-modal-open! false))
                    state (with-out-str
                            (pprint {:distant distant
                                     :repeater repeater
