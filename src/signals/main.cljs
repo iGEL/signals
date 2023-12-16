@@ -284,6 +284,9 @@
           ($ :tr
              (let [[modal-open? set-modal-open!] (uix/use-state false)
                    [copied? set-copied!] (uix/use-state false)
+                   close-modal (fn []
+                           (set-copied! false)
+                           (set-modal-open! false))
                    state (with-out-str
                            (pprint {:distant distant
                                     :repeater repeater
@@ -299,14 +302,14 @@
                                (.setAttribute a "href" (js/URL.createObjectURL content))
                                (.setAttribute a "download" "state.txt")
                                (.click a))]
-               ($ :td
+               ($ :td {:col-span 5}
                   ($ modal {:open? modal-open?
-                            :close #(set-modal-open! false)
-                            :header "🐛 Bug melden"
+                            :close close-modal
+                            :header "🐛 Fehler melden"
                             :footer ($ :div
-                                       ($ button {:on-click #(set-modal-open! false)} "Schließen"))}
+                                       ($ button {:on-click close-modal} "Schließen"))}
                      ($ :div
-                        "Wenn du einen Bug gefunden hast, bitte melde ihn mir. Dazu hast du diese Möglichkeiten:"
+                        "Wenn du einen Fehler gefunden hast, bitte melde ihn mir. Dazu hast du diese Möglichkeiten:"
                         ($ :ul
                            ($ :li
                               "Erstelle einen "
@@ -336,7 +339,7 @@
                            ($ :strong "Danke! ❤️"))))
                   ($ button {:type "danger"
                              :on-click #(set-modal-open! true)}
-                     "🐛 Bug melden"))))))))
+                     "🐛 Fehler melden"))))))))
 
 (defonce root (uix.dom/create-root (js/document.getElementById "app")))
 
