@@ -120,10 +120,8 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: Install npm deps
         run: yarn install --frozen-lockfile
-      - name: Build js
-        run: yarn build-cljs
-      - name: Build css
-        run: yarn build-stylus
+      - name: Build cljs & css
+        run: yarn release
       - name: Upload assets
         uses: actions/upload-pages-artifact@v1
         with:

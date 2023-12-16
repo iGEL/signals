@@ -1,13 +1,16 @@
 {
   "scripts": {
-    "fmt": "clojure -M:nsorg-fix src test && clojure -M:cljfmt-fix src *.edn test",
+    "dev": "yarn watch-cljs & yarn watch-styles",
+    "release": "yarn release-cljs && yarn release-styles",
+
     "check-fmt": "clojure -M:nsorg-check src test && clojure -M:cljfmt-check src *.edn test",
+    "fmt": "clojure -M:nsorg-fix src test && clojure -M:cljfmt-fix src *.edn test",
     "lint": "clojure -M:lint",
+    "release-styles": "stylus --include-css -c -I src -I node_modules -o public/signals.css -m src/signals/signals.styl",
+    "release-cljs": "shadow-cljs -A:dev release app",
     "test": "shadow-cljs compile test",
     "watch-cljs": "shadow-cljs -A:dev watch app",
-    "build-cljs": "shadow-cljs compile app",
-    "watch-stylus": "stylus --include-css -c -I src -I node_modules -o public/signals.css -w -m src/signals/signals.styl",
-    "build-stylus": "stylus --include-css -c -I src -I node_modules -o public/signals.css -m src/signals/signals.styl",
+    "watch-styles": "stylus --include-css -c -I src -I node_modules -o public/signals.css -w -m src/signals/signals.styl",
     "watch-test": "shadow-cljs watch test"
   },
   "devDependencies": {
