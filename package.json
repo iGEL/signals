@@ -8,7 +8,7 @@
     "lint": "clojure -M:lint",
     "release-styles": "stylus --include-css -c -I src -I node_modules -o public/signals.css -m src/signals/signals.styl",
     "release-cljs": "shadow-cljs -A:dev release app",
-    "test": "shadow-cljs compile test",
+    "test": "shadow-cljs -A:dev compile test",
     "watch-cljs": "shadow-cljs -A:dev watch app",
     "watch-styles": "stylus --include-css -c -I src -I node_modules -o public/signals.css -w -m src/signals/signals.styl",
     "watch-test": "shadow-cljs watch test"
