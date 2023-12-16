@@ -1,6 +1,6 @@
 ## Signals!
 
-![Build Status](https://github.com/github/docs/actions/workflows/build-deploy.yml/badge.svg?branch=main)
+![Build Status](https://github.com/iGEL/signals/actions/workflows/build-deploy.yml/badge.svg?branch=main)
 
 This is a toy project written in [ClojureScript](https://clojurescript.org/).
 It renders some German railway signals as SVG. You can [try it yourself](https://igel.github.io/signals/)!
