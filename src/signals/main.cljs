@@ -1,5 +1,7 @@
 (ns signals.main
   (:require
+   [clojure.pprint :refer [pprint]]
+   [signals.bootstrap :refer [button modal]]
    [signals.helper :refer [stop-aspect?]]
    [signals.hl :as hl]
    [signals.hv-light :as hv-light]
@@ -15,17 +17,6 @@
            :height "600"}
      ($ signal/defs)
      ($ signal/signal {:signal signal})))
-
-(defui button [{:keys [on-click active? children disabled? type title]
-                :or {type "primary"}}]
-  ($ :<>
-     ($ :button.btn.btn-sm
-        {:class [(str "btn-outline-" type) (when active? "active")]
-         :disabled disabled?
-         :on-click on-click
-         :title title}
-        children)
-     " "))
 
 (defui shortened-break-path-btn [{:keys [set-state! state]}]
   (let [active? (-> state :distant :distant-addition (= :shortened-break-path))]
@@ -289,7 +280,63 @@
                 ($ speed-limit-btns {:set-state! (fn [attr val]
                                                    (set-main! (assoc-in main [:main attr] val))
                                                    (set-combination! (assoc-in combination [:distant (if (= attr :zs3) :zs3v attr)] val)))
-                                     :state main})))))))
+                                     :state main})))
+          ($ :tr
+             (let [[modal-open? set-modal-open!] (uix/use-state false)
+                   [copied? set-copied!] (uix/use-state false)
+                   state (with-out-str
+                           (pprint {:distant distant
+                                    :repeater repeater
+                                    :combination combination
+                                    :main main}))
+                   copy (fn []
+                          (-> js/navigator
+                              .-clipboard
+                              (.writeText state)
+                              (.then #(set-copied! true))))
+                   download #(let [a (js/document.createElement "a")
+                                   content (js/Blob. [state] (clj->js {:type "plain/text"}))]
+                               (.setAttribute a "href" (js/URL.createObjectURL content))
+                               (.setAttribute a "download" "state.txt")
+                               (.click a))]
+               ($ :td
+                  ($ modal {:open? modal-open?
+                            :close #(set-modal-open! false)
+                            :header "🐛 Bug melden"
+                            :footer ($ :div
+                                       ($ button {:on-click #(set-modal-open! false)} "Schließen"))}
+                     ($ :div
+                        "Wenn du einen Bug gefunden hast, bitte melde ihn mir. Dazu hast du diese Möglichkeiten:"
+                        ($ :ul
+                           ($ :li
+                              "Erstelle einen "
+                              ($ :a {:href "https://github.com/iGEL/signals/issues/new"
+                                     :target "_blank"} "Issue auf GitHub")
+                              " (GitHub account erforderlich)")
+                           ($ :li
+                              "Sende mir eine E-Mail an "
+                              ($ :a {:href "mailto:igel@igels.net"} "igel@igels.net"))
+                           ($ :li
+                              "Schreib mir auf Mastodon an "
+                              ($ :a {:href "https://mastodon.online/@iGEL"
+                                     :target "_blank"} "@iGEL@mastodon.online")))
+                        ($ :div
+                           ($ :strong "Wichtig:"))
+                        "Bitte sende mir den State der Signale, damit ich den Fehler einfach nachvollziehen kann."
+                        ($ :ol
+                           ($ :li "Wenn der Fehler nicht schon sichtbar ist, schließe das Fenster jetzt und bringe die Signale in den fehlerhaften Zustand.")
+                           ($ :li
+                              "Klicke auf "
+                              ($ button {:on-click copy}
+                                 (if copied? "kopiert ✅" "kopieren"))
+                              " oder "
+                              ($ button {:on-click download} "herunterladen")
+                              " und sende mir dies mit der Beschreibung des korrekten Zustands zu."))
+                        ($ :div
+                           ($ :strong "Danke! ❤️"))))
+                  ($ button {:type "danger"
+                             :on-click #(set-modal-open! true)}
+                     "🐛 Bug melden"))))))))
 
 (defn render []
   (uix.dom/render ($ demo) (.getElementById js/document "app")))
