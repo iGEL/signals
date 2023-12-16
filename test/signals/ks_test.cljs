@@ -389,7 +389,7 @@
                     :bottom-white nil}
                    (-> (signal/distant {:aspect :proceed
                                         :speed-limit 10
-                                        :zs3v :display
+                                        :zs3 :display
                                         :distant-addition :shortened-break-path
                                         :system :ks})
                        ks/lights))))
@@ -403,7 +403,7 @@
                     :zs7 nil
                     :bottom-white nil}
                    (-> (signal/combination {:distant {:aspect :proceed
-                                                      :zs3v :sign
+                                                      :zs3 :sign
                                                       :speed-limit 10
                                                       :distant-addition :shortened-break-path}
                                             :main {:aspect :proceed}
@@ -420,7 +420,7 @@
                     :zs7 nil
                     :bottom-white nil}
                    (-> (signal/distant {:aspect :proceed
-                                        :zs3v :display
+                                        :zs3 :display
                                         :distant-addition :shortened-break-path
                                         :system :ks})
                        ks/lights))))
@@ -434,7 +434,7 @@
                     :zs7 nil
                     :bottom-white nil}
                    (-> (signal/combination {:distant {:aspect :proceed
-                                                      :zs3v :display
+                                                      :zs3 :display
                                                       :distant-addition :shortened-break-path}
                                             :main {:aspect :proceed}
                                             :system :ks})
@@ -696,7 +696,7 @@
                     :zs7 nil
                     :bottom-white nil}
                    (-> (signal/combination {:distant {:aspect :stop
-                                                      :zs3v :sign
+                                                      :zs3 :sign
                                                       :speed-limit 10}
                                             :main {:aspect :proceed}
                                             :system :ks})
@@ -757,7 +757,7 @@
                 :bottom-white nil}
                (-> (signal/distant {:aspect :stop
                                     :speed-limit 10
-                                    :zs3v :display
+                                    :zs3 :display
                                     :system :ks})
                    ks/lights))))
 
@@ -787,7 +787,7 @@
                   :zs7 nil
                   :bottom-white nil}
                  (-> (signal/distant {:aspect :proceed
-                                      :zs3v :display
+                                      :zs3 :display
                                       :system :ks})
                      ks/lights))))
 
@@ -800,7 +800,7 @@
                   :zs7 nil
                   :bottom-white :off}
                  (-> (signal/distant {:aspect :proceed
-                                      :zs3v :display
+                                      :zs3 :display
                                       :distant-addition :repeater
                                       :system :ks})
                      ks/lights))))
@@ -814,7 +814,7 @@
                   :zs7 nil
                   :bottom-white nil}
                  (-> (signal/combination {:distant {:aspect :proceed
-                                                    :zs3v :display}
+                                                    :zs3 :display}
                                           :main {:aspect :proceed}
                                           :system :ks})
                      ks/lights)))))
@@ -830,7 +830,7 @@
                   :bottom-white nil}
                  (-> (signal/distant {:aspect :proceed
                                       :speed-limit 10
-                                      :zs3v :display
+                                      :zs3 :display
                                       :system :ks})
                      ks/lights))))
 
@@ -844,7 +844,7 @@
                   :bottom-white :on}
                  (-> (signal/distant {:aspect :proceed
                                       :speed-limit 10
-                                      :zs3v :display
+                                      :zs3 :display
                                       :distant-addition :repeater
                                       :system :ks})
                      ks/lights))))
@@ -859,7 +859,7 @@
                     :zs7 nil
                     :bottom-white nil}
                    (-> (signal/combination {:distant {:aspect :stop
-                                                      :zs3v :sign
+                                                      :zs3 :sign
                                                       :speed-limit 10}
                                             :main {:aspect :proceed}
                                             :system :ks})
@@ -874,7 +874,7 @@
                     :zs7 nil
                     :bottom-white nil}
                    (-> (signal/combination {:distant {:aspect :proceed
-                                                      :zs3v :sign
+                                                      :zs3 :sign
                                                       :speed-limit 10}
                                             :main {:aspect :proceed}
                                             :system :ks})

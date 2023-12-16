@@ -94,8 +94,8 @@
 
 (defn distant
   "Constructor for a distant signal"
-  [{:keys [aspect speed-limit slow-speed-lights distant-addition zs3v system]
-    :or {aspect :stop zs3v nil slow-speed-lights []}}]
+  [{:keys [aspect speed-limit slow-speed-lights distant-addition zs3 system]
+    :or {aspect :stop zs3 nil slow-speed-lights []}}]
   {:post [(p/ret! ::spec/signal %)]}
   {:system system
    :type :distant
@@ -103,15 +103,16 @@
              :speed-limit speed-limit
              :distant-addition distant-addition
              :slow-speed-lights slow-speed-lights
-             :zs3v zs3v}})
+             :zs3 zs3}})
 
 (defn combination
   "Constructor for a combination of a main & distant signal"
   [{{distant-aspect :aspect
      distant-speed-limit :speed-limit
      distant-slow-speed-lights :slow-speed-lights
-     :keys [zs3v distant-addition]
-     :or {distant-aspect :stop zs3v nil distant-slow-speed-lights []}} :distant
+     zs3v :zs3
+     :keys [distant-addition]
+     :or {distant-aspect :stop distant-slow-speed-lights []}} :distant
     {main-aspect :aspect
      main-speed-limit :speed-limit
      main-slow-speed-lights :slow-speed-lights
@@ -125,7 +126,7 @@
              :speed-limit distant-speed-limit
              :distant-addition distant-addition
              :slow-speed-lights distant-slow-speed-lights
-             :zs3v zs3v}
+             :zs3 zs3v}
    :main {:aspect main-aspect
           :speed-limit main-speed-limit
           :slow-speed-lights main-slow-speed-lights

@@ -20,12 +20,12 @@
                             :value (/ speed-limit 10)})
     nil))
 
-(defui zs3v [{{{:keys [zs3v speed-limit]
+(defui zs3v [{{{:keys [zs3 speed-limit]
                 distant-aspect :aspect} :distant
                {main-aspect :aspect} :main
                :as signal} :signal}]
   {:pre [(p/arg! ::spec/signal signal)]}
-  (case zs3v
+  (case zs3
     :display ($ :g {:transform "translate(8,19)"}
                 ($ display/view {:color :yellow
                                  :value (when (and (not (stop-aspect? distant-aspect))

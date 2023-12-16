@@ -25,7 +25,7 @@
     {distant-aspect :aspect
      distant-speed-limit :speed-limit
      distant-addition :distant-addition
-     zs3v :zs3v} :distant
+     zs3 :zs3} :distant
     signal-type :type
     :as signal}]
   {:pre [(p/arg! ::signal/signal signal)]
@@ -34,7 +34,7 @@
                 (not= :shortened-break-path distant-addition) nil
                 (stop-aspect? main-aspect) :off
                 (or (stop-aspect? distant-aspect)
-                    (and distant-speed-limit zs3v)) :on
+                    (and distant-speed-limit zs3)) :on
                 :else :off)
    :red (cond
           (= :distant signal-type) nil
@@ -43,7 +43,7 @@
    :green (cond
             (stop-aspect? main-aspect) :off
             (stop-aspect? distant-aspect) :off
-            (and distant-speed-limit zs3v) :blinking
+            (and distant-speed-limit zs3) :blinking
             :else :on)
    :yellow (cond
              (= :main signal-type) nil
@@ -66,7 +66,7 @@
                    (cond
                      (not= :repeater distant-addition) nil
                      (or (stop-aspect? distant-aspect)
-                         (and distant-speed-limit zs3v)) :on
+                         (and distant-speed-limit zs3)) :on
                      :else :off)
                    (cond
                      (and (not sh1?)

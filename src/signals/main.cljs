@@ -281,13 +281,13 @@
              ($ :td
                 ($ speed-limit-btns {:set-state! (fn [attr val]
                                                    (set-combination! (assoc-in combination [:main attr] val))
-                                                   (set-repeater! (assoc-in repeater [:distant (if (= attr :zs3) :zs3v attr)] val))
-                                                   (set-distant! (assoc-in distant [:distant (if (= attr :zs3) :zs3v attr)] val)))
+                                                   (set-repeater! (assoc-in repeater [:distant attr] val))
+                                                   (set-distant! (assoc-in distant [:distant attr] val)))
                                      :state combination}))
              ($ :td
                 ($ speed-limit-btns {:set-state! (fn [attr val]
                                                    (set-main! (assoc-in main [:main attr] val))
-                                                   (set-combination! (assoc-in combination [:distant (if (= attr :zs3) :zs3v attr)] val)))
+                                                   (set-combination! (assoc-in combination [:distant attr] val)))
                                      :state main})))
           ($ :tr
              (let [[modal-open? set-modal-open!] (uix/use-state false)
