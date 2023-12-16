@@ -17,6 +17,5 @@
     "react-refresh": "^0.14.0",
     "stylus": "^0.60.0"
   },
-  "license": "UNLICENSED",
-  "private": true
+  "license": "MIT"
 }
