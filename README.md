@@ -32,11 +32,12 @@ directly. But you can use the signals from cljs.
 ```
 
 To display the signals, you need to include the
-[signals.css](public/signals.css) (or [signals.styl](src/signals/signals.styl)
-if you use [Stylus](https://stylus-lang.com/)) and create a React component
-returning a `svg` tag. Inside, you have to once include `signals.signal/defs`,
-then you can call `signals.signal/signal` passing the signal you want with the
-`:signal` key.
+[signals.css](https://igel.github.io/signals/signals.css) (or
+[signals.styl](src/signals/signals.styl) if you use
+[Stylus](https://stylus-lang.com/)) and create a React component returning a
+`svg` element. Inside, you have to once include `signals.signal/defs`, then you
+can call `signals.signal/signal` passing the signal you want with the `:signal`
+key.
 
 Here an example using [UIx](https://github.com/pitch-io/uix):
 
