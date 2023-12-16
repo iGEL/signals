@@ -3,8 +3,9 @@
    [cljs.spec.alpha :as s]
    [clojure.set :refer [intersection]]
    [preo.core :as p]
+   [signals.helper :refer [stop-aspect?]]
    [signals.lamp :as lamp :refer [lamp]]
-   [signals.signal :as signal :refer [stop-aspect?]]
+   [signals.spec :as spec]
    [uix.core :refer [$ defui]]))
 
 (s/def ::top-yellow ::lamp/state)
@@ -31,7 +32,7 @@
                 distant-addition :distant-addition} :distant
                signal-type :type
                :as signal}]
-  {:pre [(p/arg! ::signal/signal signal)]
+  {:pre [(p/arg! ::spec/signal signal)]
    :post [(p/ret! ::lights %)]}
   (let [distant? (= :distant signal-type)
         main? (= :main signal-type)
@@ -97,7 +98,7 @@
                 227)}))
 
 (defui view [{:keys [signal]}]
-  {:pre [(p/arg! ::signal/signal signal)]}
+  {:pre [(p/arg! ::spec/signal signal)]}
   (let [{:keys [top-yellow top-green top-white red bottom-white bottom-yellow replacement-red
                 yellow-stripe green-stripe]} (lights signal)]
     ($ :g.hlSignal
@@ -162,7 +163,7 @@
 
 (defn speed-limit-available? [{{slow-speed-lights :slow-speed-lights} :main
                                :as signal} limit]
-  {:pre [(p/arg! ::signal/signal signal)]}
+  {:pre [(p/arg! ::spec/signal signal)]}
   (let [speeds (-> slow-speed-lights
                    set
                    (intersection #{40 60 100}))]

@@ -2,9 +2,10 @@
   (:require
    [cljs.spec.alpha :as s]
    [preo.core :as p]
+   [signals.helper :refer [stop-aspect?]]
    [signals.hv-light :as hv-light]
    [signals.lamp :as lamp]
-   [signals.signal :as signal]
+   [signals.spec :as spec]
    [uix.core :refer [$ defui]]))
 
 (s/def :distant/disk #{:vertical :horizontal})
@@ -34,13 +35,13 @@
               distant-addition :distant-addition} :distant
              signal-type :type
              :as signal}]
-  {:pre [(p/arg! ::signal/signal signal)]
+  {:pre [(p/arg! ::spec/signal signal)]
    :post [(p/ret! ::arms %)]}
   {:main (when-not (= :distant signal-type)
-           {:top-arm (if (signal/stop-aspect? main-aspect) :horizontal :inclined)
+           {:top-arm (if (stop-aspect? main-aspect) :horizontal :inclined)
             :lower-arm (cond
                          (not (some #{40} main-slow-speed-lights)) nil
-                         (and (not (signal/stop-aspect? main-aspect))
+                         (and (not (stop-aspect? main-aspect))
                               main-speed-limit
                               (>= 60 main-speed-limit)) :inclined
                          :else :vertical)
@@ -60,20 +61,20 @@
                        (not= :repeater distant-addition))
               (let [has-slow-speed? (some #{40} distant-slow-speed-lights)
                     slow-speed? (and has-slow-speed?
-                                     (not (signal/stop-aspect? main-aspect))
-                                     (not (signal/stop-aspect? distant-aspect))
+                                     (not (stop-aspect? main-aspect))
+                                     (not (stop-aspect? distant-aspect))
                                      distant-speed-limit
                                      (>= 60 distant-speed-limit))]
-                {:disk (if (or (signal/stop-aspect? main-aspect)
-                               (signal/stop-aspect? distant-aspect)
+                {:disk (if (or (stop-aspect? main-aspect)
+                               (stop-aspect? distant-aspect)
                                slow-speed?) :vertical
                            :horizontal)
                  :arm (cond
                         (not has-slow-speed?) nil
                         slow-speed? :inclined
                         :else :vertical)
-                 :right-lights (if (and (not (signal/stop-aspect? main-aspect))
-                                        (not (signal/stop-aspect? distant-aspect)))
+                 :right-lights (if (and (not (stop-aspect? main-aspect))
+                                        (not (stop-aspect? distant-aspect)))
                                  :inclined
                                  :vertical)
                  :shortened-break-path? (= :shortened-break-path distant-addition)}))})
@@ -183,7 +184,7 @@
                     :height 22}))
 
 (defui view [{:keys [signal]}]
-  {:pre [(p/arg! ::signal/signal signal)]}
+  {:pre [(p/arg! ::spec/signal signal)]}
   (let [{{:keys [top-arm lower-arm sh1]
           :as main} :main
          {:keys [disk arm right-lights]

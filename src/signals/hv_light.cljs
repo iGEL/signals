@@ -2,8 +2,9 @@
   (:require
    [cljs.spec.alpha :as s]
    [preo.core :as p]
+   [signals.helper :refer [stop-aspect?]]
    [signals.lamp :as lamp]
-   [signals.signal :as signal]
+   [signals.spec :as spec]
    [uix.core :refer [$ defui]]))
 
 ;; ---- Distant aspect
@@ -38,21 +39,21 @@
                 distant-addition :distant-addition} :distant
                signal-type :type
                :as signal}]
-  {:pre [(p/arg! ::signal/signal signal)]
+  {:pre [(p/arg! ::spec/signal signal)]
    :post [(p/ret! ::lights %)]}
   {:main (when-not (= :distant signal-type)
-           {:green (if (signal/stop-aspect? main-aspect) :off :on)
-            :red (if (signal/stop-aspect? main-aspect) :on :off)
+           {:green (if (stop-aspect? main-aspect) :off :on)
+            :red (if (stop-aspect? main-aspect) :on :off)
             :yellow (let [has-light? (some #{40} main-slow-speed-lights)]
                       (cond
                         (not has-light?) nil
-                        (and (not (signal/stop-aspect? main-aspect))
+                        (and (not (stop-aspect? main-aspect))
                              main-speed-limit (>= 60 main-speed-limit)) :on
                         :else :off))
             :secondary-red (cond
                              (not sh1?) nil
                              (= :stop+sh1 main-aspect) :off
-                             (signal/stop-aspect? main-aspect) :on
+                             (stop-aspect? main-aspect) :on
                              :else :off)
             :sh1 (cond
                    (not sh1?) nil
@@ -71,23 +72,23 @@
                                      distant-speed-limit
                                      (>= 60 distant-speed-limit))]
                 {:top-green (cond
-                              (signal/stop-aspect? main-aspect) :off
-                              (signal/stop-aspect? distant-aspect) :off
+                              (stop-aspect? main-aspect) :off
+                              (stop-aspect? distant-aspect) :off
                               :else :on)
                  :top-yellow (cond
-                               (signal/stop-aspect? main-aspect) :off
-                               (signal/stop-aspect? distant-aspect) :on
+                               (stop-aspect? main-aspect) :off
+                               (stop-aspect? distant-aspect) :on
                                :else :off)
                  :white (when distant-addition
-                          (if (signal/stop-aspect? main-aspect) :off :on))
+                          (if (stop-aspect? main-aspect) :off :on))
                  :bottom-green (cond
-                                 (signal/stop-aspect? main-aspect) :off
-                                 (signal/stop-aspect? distant-aspect) :off
+                                 (stop-aspect? main-aspect) :off
+                                 (stop-aspect? distant-aspect) :off
                                  slow-speed? :off
                                  :else :on)
                  :bottom-yellow (cond
-                                  (signal/stop-aspect? main-aspect) :off
-                                  (signal/stop-aspect? distant-aspect) :on
+                                  (stop-aspect? main-aspect) :off
+                                  (stop-aspect? distant-aspect) :on
                                   slow-speed? :on
                                   :else :off)}))})
 
@@ -127,7 +128,7 @@
                      :y 24}))))
 
 (defui view [{:keys [signal]}]
-  {:pre [(p/arg! ::signal/signal signal)]}
+  {:pre [(p/arg! ::spec/signal signal)]}
   (let [{{:keys [green red yellow secondary-red sh1] :as main} :main
          {:keys [top-green top-yellow white bottom-green bottom-yellow]} :distant} (lights signal)]
     ($ :<>
@@ -231,7 +232,7 @@
 
 (defn speed-limit-available? [{{:keys [zs3 slow-speed-lights]} :main
                                :as signal} limit]
-  {:pre [(p/arg! ::signal/signal signal)]}
+  {:pre [(p/arg! ::spec/signal signal)]}
   (cond
     (= :display zs3) true
     (= :sign zs3) limit

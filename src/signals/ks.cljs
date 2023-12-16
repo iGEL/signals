@@ -2,8 +2,9 @@
   (:require
    [cljs.spec.alpha :as s]
    [preo.core :as p]
+   [signals.helper :refer [stop-aspect?]]
    [signals.lamp :as lamp :refer [lamp]]
-   [signals.signal :as signal]
+   [signals.spec :as signal]
    [uix.core :refer [$ defui]]))
 
 (s/def ::top-white ::lamp/state)
@@ -31,23 +32,23 @@
    :post [(p/ret! ::lights %)]}
   {:top-white (cond
                 (not= :shortened-break-path distant-addition) nil
-                (signal/stop-aspect? main-aspect) :off
-                (or (signal/stop-aspect? distant-aspect)
+                (stop-aspect? main-aspect) :off
+                (or (stop-aspect? distant-aspect)
                     (and distant-speed-limit zs3v)) :on
                 :else :off)
    :red (cond
           (= :distant signal-type) nil
-          (signal/stop-aspect? main-aspect) :on
+          (stop-aspect? main-aspect) :on
           :else :off)
    :green (cond
-            (signal/stop-aspect? main-aspect) :off
-            (signal/stop-aspect? distant-aspect) :off
+            (stop-aspect? main-aspect) :off
+            (stop-aspect? distant-aspect) :off
             (and distant-speed-limit zs3v) :blinking
             :else :on)
    :yellow (cond
              (= :main signal-type) nil
-             (signal/stop-aspect? main-aspect) :off
-             (signal/stop-aspect? distant-aspect) :on
+             (stop-aspect? main-aspect) :off
+             (stop-aspect? distant-aspect) :on
              :else :off)
    :center-white (cond
                    (and (not sh1?)
@@ -64,7 +65,7 @@
    :bottom-white (if (= :distant signal-type)
                    (cond
                      (not= :repeater distant-addition) nil
-                     (or (signal/stop-aspect? distant-aspect)
+                     (or (stop-aspect? distant-aspect)
                          (and distant-speed-limit zs3v)) :on
                      :else :off)
                    (cond

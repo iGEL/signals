@@ -31,10 +31,24 @@ directly. But you can use the signals from cljs.
                   :main {:aspect :proceed}}))
 ```
 
-Any of those signals can be displayed with calling
+To display the signals, you need to include the
+[signals.css](public/signals.css) (or [signals.styl](src/signals/signals.styl)
+if you use [Stylus](https://stylus-lang.com/)) and create a React component
+returning a `svg` tag. Inside, you have to once include `signals.signal/defs`,
+then you can call `signals.signal/signal` passing the signal you want with the
+`:signal` key.
+
+Here an example using [UIx](https://github.com/pitch-io/uix):
 
 ```cljs
-TODO
+(require '[signals.signal :as signal])
+
+($ :svg {:version "1.1"
+         :viewBox "0 0 140 600"
+         :width "200"
+         :height "600"}
+   ($ signal/defs)
+   ($ signal/signal {:signal @!main}))
 ```
 
 You can configure signals by adding features to the top level, to the

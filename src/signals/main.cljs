@@ -1,86 +1,20 @@
 (ns signals.main
   (:require
+   [signals.helper :refer [stop-aspect?]]
    [signals.hl :as hl]
    [signals.hv-light :as hv-light]
-   [signals.hv-semaphore :as hv-semaphore]
    [signals.ks :as ks]
-   [signals.ne :as ne]
    [signals.signal :as signal]
-   [signals.zs3 :refer [zs3 zs3v]]
    [uix.core :as uix :refer [$ defui]]
    [uix.dom :as uix.dom]))
-
-(defui radial-gradient [{:keys [id stop-color1 stop-color2]}]
-  ($ :radialGradient {:id id}
-     ($ :stop {:stopColor stop-color1
-               :offset "0.05"})
-     ($ :stop {:stopColor stop-color2
-               :offset "0.9"})))
-
-(defui defs []
-  ($ :defs
-     ($ radial-gradient {:id "green-gradient"
-                         :stop-color1 "#33ff6d"
-                         :stop-color2 "#00bd4a"})
-     ($ radial-gradient {:id "red-gradient"
-                         :stop-color1 "#ff3763"
-                         :stop-color2 "#da012a"})
-     ($ radial-gradient {:id "orange-gradient"
-                         :stop-color1 "#ffc955"
-                         :stop-color2 "#fc8e00"})
-     ($ radial-gradient {:id "yellow-gradient"
-                         :stop-color1 "#ffe060"
-                         :stop-color2 "#fac412"})
-     ($ radial-gradient {:id "white-gradient"
-                         :stop-color1 "#fffaef"
-                         :stop-color2 "#ebe6d8"})))
 
 (defui signal [{:keys [signal]}]
   ($ :svg {:version "1.1"
            :viewBox "0 0 140 600"
            :width "200"
            :height "600"}
-     ($ defs)
-     (case (:system signal)
-       :ks ($ :<>
-              ($ :g {:transform "translate(16,0)"}
-                 ($ zs3 {:signal signal}))
-              ($ :g {:transform "translate(19,65)"}
-                 ($ ks/view {:signal signal}))
-              ($ :g {:transform "translate(16,168)"}
-                 ($ zs3v {:signal signal}))
-              (when (and (= :distant (:type signal))
-                         (not (= :repeater (-> signal :distant :distant-addition))))
-                ($ :g {:transform "translate(33,500)"}
-                   ($ ne/ne2))))
-
-       :hl ($ :<> ($ hl/view {:signal signal})
-              (when (and (= :distant (:type signal))
-                         (not (= :repeater (-> signal :distant :distant-addition))))
-                ($ :g {:transform "translate(17,500)"}
-                   ($ ne/ne2 {:shortened-break-path? (-> signal hl/lights :shortened-break-path?)}))))
-       :hv-light ($ :<>
-                    ($ :g {:transform "translate(19,0)"}
-                       ($ zs3 {:signal signal}))
-                    ($ :g {:transform "translate(3,65)"}
-                       ($ hv-light/view {:signal signal}))
-                    ($ :g {:transform "translate(19,350)"}
-                       ($ zs3v {:signal signal}))
-                    (when (and (= :distant (:type signal))
-                               (not (= :repeater (-> signal :distant :distant-addition))))
-                      ($ :g {:transform "translate(33,500)"}
-                         ($ ne/ne2))))
-       :hv-semaphore ($ :<>
-                        ($ :g {:transform "translate(19,0)"}
-                           ($ zs3 {:signal signal}))
-                        ($ :g {:transform "translate(3,65)"}
-                           ($ hv-semaphore/view {:signal signal}))
-                        ($ :g {:transform "translate(19,350)"}
-                           ($ zs3v {:signal signal}))
-                        (when (and (= :distant (:type signal))
-                                   (not (= :repeater (-> signal :distant :distant-addition))))
-                          ($ :g {:transform "translate(33,500)"}
-                             ($ ne/ne2 {:shortened-break-path? (-> signal hv-semaphore/arms :distant :shortened-break-path?)})))))))
+     ($ signal/defs)
+     ($ signal/signal {:signal signal})))
 
 (defui button [{:keys [on-click active? children disabled? type title]
                 :or {type "primary"}}]
@@ -278,25 +212,25 @@
                              :type "success"} "Fahrt")
                   ($ :div.btn-group
                      ($ button {:on-click #(set-combination-aspect! :stop)
-                                :active? (signal/stop-aspect? current-aspect)
+                                :active? (stop-aspect? current-aspect)
                                 :type "danger"} "Halt")
                      (when (:sh1? combination-main)
                        ($ button {:on-click #(set-combination-aspect! (if (= :stop+sh1 current-aspect)
                                                                         :stop
                                                                         :stop+sh1))
-                                  :disabled? (not (signal/stop-aspect? current-aspect))
+                                  :disabled? (not (stop-aspect? current-aspect))
                                   :active? (= :stop+sh1 current-aspect)} "Sh1/Ra12"))
                      (when (:zs1? combination-main)
                        ($ button {:on-click #(set-combination-aspect! (if (= :stop+zs1 current-aspect)
                                                                         :stop
                                                                         :stop+zs1))
-                                  :disabled? (not (signal/stop-aspect? current-aspect))
+                                  :disabled? (not (stop-aspect? current-aspect))
                                   :active? (= :stop+zs1 current-aspect)} "Zs1"))
                      (when (:zs7? combination-main)
                        ($ button {:on-click #(set-combination-aspect! (if (= :stop+zs7 current-aspect)
                                                                         :stop
                                                                         :stop+zs7))
-                                  :disabled? (not (signal/stop-aspect? current-aspect))
+                                  :disabled? (not (stop-aspect? current-aspect))
                                   :active? (= :stop+zs7 current-aspect)} "Zs7")))))
              (let [main-state (:main main)
                    current-aspect (:aspect main-state)]
@@ -307,25 +241,25 @@
                   ($ :div.btn-group
 
                      ($ button {:on-click #(set-main-aspect! :stop)
-                                :active? (signal/stop-aspect? current-aspect)
+                                :active? (stop-aspect? current-aspect)
                                 :type "danger"} "Halt")
                      (when (:sh1? main-state)
                        ($ button {:on-click #(set-main-aspect! (if (= :stop+sh1 current-aspect)
                                                                  :stop
                                                                  :stop+sh1))
-                                  :disabled? (not (signal/stop-aspect? current-aspect))
+                                  :disabled? (not (stop-aspect? current-aspect))
                                   :active? (= :stop+sh1 current-aspect)} "Sh1/Ra12"))
                      (when (:zs1? main-state)
                        ($ button {:on-click #(set-main-aspect! (if (= :stop+zs1 current-aspect)
                                                                  :stop
                                                                  :stop+zs1))
-                                  :disabled? (not (signal/stop-aspect? current-aspect))
+                                  :disabled? (not (stop-aspect? current-aspect))
                                   :active? (= :stop+zs1 current-aspect)} "Zs1"))
                      (when (:zs7? main-state)
                        ($ button {:on-click #(set-main-aspect! (if (= :stop+zs7 current-aspect)
                                                                  :stop
                                                                  :stop+zs7))
-                                  :disabled? (not (signal/stop-aspect? current-aspect))
+                                  :disabled? (not (stop-aspect? current-aspect))
                                   :active? (= :stop+zs7 current-aspect)} "Zs7"))))))
           ($ :tr
              ($ :th "Features")
