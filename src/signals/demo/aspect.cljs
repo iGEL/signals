@@ -12,21 +12,32 @@
         zs7-active? (= :stop+zs7 current-aspect)]
     ($ :<>
        ($ button {:on-click #(set-state! {:aspect :proceed})
+                  :title "Stelle das Signal auf Fahrt"
                   :active? (= :proceed current-aspect)
                   :type "success"} "Fahrt")
        ($ :div.btn-group
-          ($ button {:on-click #(set-state! {:aspect :stop})
-                     :active? (stop-aspect? current-aspect)
-                     :type "danger"} "Halt")
           (when (:sh1? main-state)
             ($ button {:on-click #(set-state! {:aspect (if sh1-active? :stop :stop+sh1)})
-                       :disabled? (not (stop-aspect? current-aspect))
-                       :active? sh1-active?} "Sh1/Ra12"))
+                       :title (if sh1-active?
+                                "Deaktiviere das Sh1/Ra12"
+                                "Stelle das Signal auf Halt mit Sh1 bzw. Ra12 aktiv")
+                       :active? sh1-active?
+                       :type "light"} "Sh1/Ra12"))
+          ($ button {:on-click #(set-state! {:aspect :stop})
+                     :title "Stelle das Signal auf Halt"
+                     :active? (stop-aspect? current-aspect)
+                     :type "danger"} "Halt")
           (when (:zs1? main-state)
             ($ button {:on-click #(set-state! {:aspect (if zs1-active? :stop :stop+zs1)})
-                       :disabled? (not (stop-aspect? current-aspect))
-                       :active? zs1-active?} "Zs1"))
+                       :title (if zs1-active?
+                                "Deaktiviere das Zs1"
+                                "Stelle das Signal auf Halt und aktiviere das Zs1")
+                       :active? zs1-active?
+                       :type "danger"} "Zs1"))
           (when (:zs7? main-state)
             ($ button {:on-click #(set-state! {:aspect (if zs7-active? :stop :stop+zs7)})
-                       :disabled? (not (stop-aspect? current-aspect))
-                       :active? zs7-active?} "Zs7"))))))
+                       :title (if zs7-active?
+                                "Deaktiviere das Zs7"
+                                "Stelle das Signal auf Halt und aktiviere das Zs7")
+                       :active? zs7-active?
+                       :type "danger"} "Zs7"))))))

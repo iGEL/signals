@@ -13,17 +13,29 @@
        "Kurzer Bremsweg")))
 
 (defui feature-btns [{:keys [set-state! state]}]
-  ($ :div.btn-group
-     ($ button {:on-click #(set-state! (update-in state [:main :sh1?] not))
-                :type "info"
-                :active? (-> state :main :sh1?)} "Sh1/Ra12")
-     ($ button {:on-click #(set-state! (update-in state [:main :zs1?] not))
-                :type "info"
-                :active? (-> state :main :zs1?)} "Zs1")
-     (when-not (= :hl (:system state))
-       ($ button {:on-click #(set-state! (update-in state [:main :zs7?] not))
+  (let [sh1? (-> state :main :sh1?)
+        zs1? (-> state :main :zs1?)
+        zs7? (-> state :main :zs7?)]
+    ($ :div.btn-group
+       ($ button {:on-click #(set-state! (update-in state [:main :sh1?] not))
+                  :title (if sh1?
+                           "Entferne das Sh1 bzw. Ra12"
+                           "Füge ein Sh1 bzw. Ra12 hinzu")
                   :type "info"
-                  :active? (-> state :main :zs7?)} "Zs7"))))
+                  :active? sh1?} "Sh1/Ra12")
+       ($ button {:on-click #(set-state! (update-in state [:main :zs1?] not))
+                  :title (if zs1?
+                           "Entferne das Zs1"
+                           "Füge ein Zs1 hinzu")
+                  :type "info"
+                  :active? zs1?} "Zs1")
+       (when-not (= :hl (:system state))
+         ($ button {:on-click #(set-state! (update-in state [:main :zs7?] not))
+                    :title (if zs7?
+                             "Entferne das Zs7"
+                             "Füge ein Zs7 hinzu")
+                    :type "info"
+                    :active? zs7?} "Zs7")))))
 
 (defui speed-limit-config-btns [{:keys [set-state! state]}]
   (let [slow-speed-lights (-> state :main :slow-speed-lights seq)
@@ -36,6 +48,9 @@
        (when (#{:hv-light :hv-semaphore} (:system state))
          ($ :div
             ($ button {:on-click #(set-state! {:slow-speed-lights (if active-40? [] [40])})
+                       :title (if active-40?
+                                "Entferne Langsamfahrt (Erlaubt Fahrt mit 40 km/h, soweit nicht anders im Fahrplan angegeben)"
+                                "Füge Langsamfahrt hinzu (Erlaubt Fahrt mit 40 km/h, soweit nicht anders im Fahrplan angegeben)")
                        :type "info"
                        :active? active-40?}
                "Langsamfahrt")))
@@ -46,6 +61,9 @@
                                       (set-state! {:slow-speed-lights (if active-100?
                                                                         (filterv #(not= 100 %) slow-speed-lights)
                                                                         (vec (conj slow-speed-lights 100)))}))
+                          :title (if active-100?
+                                   "Entferne Lampen für 100 km/h"
+                                   "Füge Lampen für 100 km/h hinzu")
                           :type "info"
                           :active? active-100?}
                   "100")
@@ -53,6 +71,9 @@
                                       (set-state! {:slow-speed-lights (if active-60?
                                                                         (filterv #(not= 60 %) slow-speed-lights)
                                                                         (vec (conj slow-speed-lights 60)))}))
+                          :title (if active-60?
+                                   "Entferne Lampen für 60 km/h"
+                                   "Füge Lampen für 60 km/h hinzu")
                           :type "info"
                           :active? active-60?}
                   "60")
@@ -60,6 +81,9 @@
                                       (set-state! {:slow-speed-lights (if active-40?
                                                                         (filterv #(not= 40 %) slow-speed-lights)
                                                                         (vec (conj slow-speed-lights 40)))}))
+                          :title (if active-40?
+                                   "Entferne Lampen für 40 km/h"
+                                   "Füge Lampen für 40 km/h hinzu")
                           :type "info"
                           :active? active-40?}
                   "40"))
@@ -68,9 +92,17 @@
                                       (set-state! {:zs3 (if zs3-sign-active? nil :sign)
                                                    :speed-limit (or (-> state :main :speed-limit)
                                                                     60)}))
+                          :title (cond
+                                   zs3-sign-active? "Entferne Zs3"
+                                   zs3-display-active? "Ändere das Zs3 zur Tafel"
+                                   :else "Füge Zs3-Tafel hinzu")
                           :type "info"
                           :active? zs3-sign-active?} "Zs3 Tafel")
                ($ button {:on-click #(set-state! {:zs3 (if zs3-display-active? nil :display)})
+                          :title (cond
+                                   zs3-display-active? "Entferne Zs3"
+                                   zs3-sign-active? "Ändere das Zs3 zum Lichtsignal"
+                                   :else "Füge Zs3-Lichtsignal hinzu")
                           :type "info"
                           :active? zs3-display-active?} "Zs3 Lichtsignal")))))))
 

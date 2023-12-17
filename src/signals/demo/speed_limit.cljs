@@ -16,6 +16,9 @@
 
 (defui speed-limit-btn [{:keys [speed-limit set-state! state]}]
   ($ button {:on-click #(set-state! {:speed-limit speed-limit})
+             :title (if speed-limit
+                      (str "Erlaube Geschwindigkeiten bis " speed-limit " km/h")
+                      "Erlaube Fahrplangeschwindigkeit")
              :type (if (or (nil? speed-limit)
                            (> speed-limit 60))
                      "success"

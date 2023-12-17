@@ -3,8 +3,9 @@ node_modules
 .cpcache
 .shadow-cljs
 public/js
-public/signals.css
-public/signals.css.map
+public/*.css
+!public/fork_me.css
+public/*.css.map
 .clj-kondo/.cache/
 .lsp
 out

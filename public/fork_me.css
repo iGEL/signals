@@ -17,6 +17,13 @@
   text-indent: -999999px;
 }
 
+@media (max-width: 1200px) {
+  .github-fork-ribbon {
+    display: none;
+  }
+}
+
+
 .github-fork-ribbon.fixed {
   position: fixed;
 }

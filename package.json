@@ -6,11 +6,11 @@
     "check-fmt": "clojure -M:nsorg-check src test && clojure -M:cljfmt-check src *.edn test",
     "fmt": "clojure -M:nsorg-fix src test && clojure -M:cljfmt-fix src *.edn test",
     "lint": "clojure -M:lint",
-    "release-styles": "stylus --include-css -c -I src -I node_modules -o public/signals.css -m src/signals/signals.styl",
+    "release-styles": "stylus --include-css -c -I src -I node_modules -o public/signals.css -m src/signals/signals.styl && stylus --include-css -c -I src -I node_modules -o public/styles.css -m src/signals/styles.styl",
     "release-cljs": "shadow-cljs -A:dev release app",
     "test": "shadow-cljs -A:dev compile test",
     "watch-cljs": "shadow-cljs -A:dev watch app",
-    "watch-styles": "stylus --include-css -c -I src -I node_modules -o public/signals.css -w -m src/signals/signals.styl",
+    "watch-styles": "stylus --include-css -c -I src -I node_modules -o public/styles.css -w -m src/signals/styles.styl",
     "watch-test": "shadow-cljs watch test"
   },
   "devDependencies": {
