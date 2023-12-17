@@ -16,6 +16,9 @@
      ($ signal/defs)
      ($ signal/signal {:signal signal})))
 
+(def warnings-for-system {:hv-semaphore "Positionierung der einzelnen Signale und Animationen müssen noch überarbeitet werden. Ne2 beim Mehrabschnitt fehlt"
+                          :hl "Markierung für Vorsignalwiederholer fehlt."})
+
 (defui demo []
   (let [[distant set-distant!] (uix/use-state (signal/distant {:system :ks}))
         [repeater set-repeater!] (uix/use-state (signal/distant {:system :ks
@@ -68,6 +71,9 @@
                                          :repeater repeater
                                          :combination combination
                                          :main main}})))
+       (when-let [warning (warnings-for-system (:system main))]
+         ($ :div.alert.alert-warning {:role "alert"}
+            warning))
        ($ :div.demo-container
           ($ :div.demo-signal
              ($ :h3.demo-signal-label "Vorsignal")
