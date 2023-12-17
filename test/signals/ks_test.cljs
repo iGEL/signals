@@ -247,7 +247,7 @@
                                :system :ks})
                  ks/lights))))
 
-    (testing "with speed limit (no Zs3v)"
+    (testing "with speed limit (no Zs3)"
       (testing "distant shows Ks1"
         (is (= {:top-white nil
                 :red nil
@@ -348,7 +348,7 @@
                      ks/lights)))))
 
       (testing "with speed limit"
-        (testing "without zs3v"
+        (testing "without zs3"
           (testing "distant shows ks1"
             (is (= {:top-white :off
                     :red nil
@@ -378,7 +378,7 @@
                                             :system :ks})
                        ks/lights)))))
 
-        (testing "with zs3v"
+        (testing "with zs3"
           (testing "distant shows ks1 (blinking) and top white"
             (is (= {:top-white :on
                     :red nil
@@ -410,7 +410,7 @@
                                             :system :ks})
                        ks/lights)))))
 
-        (testing "with zs3v but no speed limit"
+        (testing "with zs3 but no speed limit"
           (testing "distant shows ks1"
             (is (= {:top-white :off
                     :red nil
@@ -640,113 +640,6 @@
 
   (testing "zs3"
     (testing "stop"
-      (testing "combination shows hp0"
-        (is (= {:top-white nil
-                :red :on
-                :green :off
-                :yellow :off
-                :center-white nil
-                :zs7 nil
-                :bottom-white nil}
-               (-> (signal/combination {:distant {:aspect :stop}
-                                        :main {:aspect :stop
-                                               :speed-limit 10
-                                               :zs3 :sign}
-                                        :system :ks})
-                   ks/lights))))
-
-      (testing "main shows hp0"
-        (is (= {:top-white nil
-                :red :on
-                :green :off
-                :yellow nil
-                :center-white nil
-                :zs7 nil
-                :bottom-white nil}
-               (-> (signal/main {:aspect :stop
-                                 :zs3 :sign
-                                 :speed-limit 10
-                                 :system :ks})
-                   ks/lights)))))
-
-    (testing "proceed"
-      (testing "with speed limit"
-        (testing "combination"
-          (testing "with stop expected shows ks2"
-            (is (= {:top-white nil
-                    :red :off
-                    :green :off
-                    :yellow :on
-                    :center-white nil
-                    :zs7 nil
-                    :bottom-white nil}
-                   (-> (signal/combination {:distant {:aspect :stop}
-                                            :main {:aspect :proceed
-                                                   :zs3 :sign
-                                                   :speed-limit 10}
-                                            :system :ks})
-                       ks/lights))))
-
-          (testing "with stop and speed limit expected shows ks2"
-            (is (= {:top-white nil
-                    :red :off
-                    :green :off
-                    :yellow :on
-                    :center-white nil
-                    :zs7 nil
-                    :bottom-white nil}
-                   (-> (signal/combination {:distant {:aspect :stop
-                                                      :zs3 :sign
-                                                      :speed-limit 10}
-                                            :main {:aspect :proceed}
-                                            :system :ks})
-                       ks/lights))))
-
-          (testing "with proceed expected shows ks1"
-            (is (= {:top-white nil
-                    :red :off
-                    :green :on
-                    :yellow :off
-                    :center-white nil
-                    :zs7 nil
-                    :bottom-white nil}
-                   (-> (signal/combination {:distant {:aspect :proceed}
-                                            :main {:aspect :proceed
-                                                   :zs3 :display
-                                                   :speed-limit 10}
-                                            :system :ks})
-                       ks/lights))))
-
-          (testing "with proceed and speed-limit expected shows ks1"
-            (is (= {:top-white nil
-                    :red :off
-                    :green :on
-                    :yellow :off
-                    :center-white nil
-                    :zs7 nil
-                    :bottom-white nil}
-                   (-> (signal/combination {:distant {:aspect :proceed
-                                                      :speed-limit 10}
-                                            :main {:aspect :proceed}
-                                            :system :ks})
-                       ks/lights)))))
-
-        (testing "main shows ks1"
-          (is (= {:top-white nil
-                  :red :off
-                  :green :on
-                  :yellow nil
-                  :center-white nil
-                  :zs7 nil
-                  :bottom-white nil}
-                 (-> (signal/main {:aspect :proceed
-                                   :speed-limit 10
-                                   :zs3 :display
-                                   :system :ks})
-                     ks/lights)))))))
-
-  (testing "zs3v"
-    (testing "stop"
       (testing "distant shows ks2"
         (is (= {:top-white nil
                 :red nil
@@ -774,6 +667,20 @@
                                                :speed-limit 10
                                                :zs3 :sign}
                                         :system :ks})
+                   ks/lights))))
+
+      (testing "main shows hp0"
+        (is (= {:top-white nil
+                :red :on
+                :green :off
+                :yellow nil
+                :center-white nil
+                :zs7 nil
+                :bottom-white nil}
+               (-> (signal/main {:aspect :stop
+                                 :zs3 :sign
+                                 :speed-limit 10
+                                 :system :ks})
                    ks/lights)))))
 
     (testing "proceed"
@@ -878,7 +785,21 @@
                                                       :speed-limit 10}
                                             :main {:aspect :proceed}
                                             :system :ks})
-                       ks/lights))))))))
+                       ks/lights)))))
+
+        (testing "main shows ks1"
+          (is (= {:top-white nil
+                  :red :off
+                  :green :on
+                  :yellow nil
+                  :center-white nil
+                  :zs7 nil
+                  :bottom-white nil}
+                 (-> (signal/main {:aspect :proceed
+                                   :speed-limit 10
+                                   :zs3 :display
+                                   :system :ks})
+                     ks/lights)))))))
 
   (testing "zs7"
     (testing "stop"
