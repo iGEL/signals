@@ -208,6 +208,53 @@
                                :system :hl})
                  hl/lights)))))
 
+  (testing "off"
+    (testing "distant shows Hl10"
+      (is (= {:top-yellow :on
+              :top-green :off
+              :top-white nil
+              :red nil
+              :bottom-white nil
+              :bottom-yellow nil
+              :replacement-red nil
+              :green-stripe nil
+              :yellow-stripe nil
+              :shortened-break-path? false}
+             (-> (signal/distant {:aspect :off
+                                  :system :hl})
+                 hl/lights))))
+
+    (testing "combination shows Hp0"
+      (is (= {:top-yellow :off
+              :top-green :off
+              :top-white nil
+              :red :on
+              :bottom-white nil
+              :bottom-yellow nil
+              :replacement-red :off
+              :green-stripe nil
+              :yellow-stripe nil
+              :shortened-break-path? false}
+             (-> (signal/combination {:distant {:aspect :stop}
+                                      :main {:aspect :off}
+                                      :system :hl})
+                 hl/lights))))
+
+    (testing "main shows Hp0"
+      (is (= {:top-yellow nil
+              :top-green :off
+              :top-white nil
+              :red :on
+              :bottom-white nil
+              :bottom-yellow nil
+              :replacement-red :off
+              :green-stripe nil
+              :yellow-stripe nil
+              :shortened-break-path? false}
+             (-> (signal/main {:aspect :off
+                               :system :hl})
+                 hl/lights)))))
+
   (testing "proceed"
     (testing "distant shows Hl1"
       (is (= {:top-yellow :off
@@ -546,6 +593,177 @@
                 :shortened-break-path? false}
                (-> (signal/main {:aspect :proceed
                                  :zs1? true
+                                 :system :hl})
+                   hl/lights))))))
+
+  (testing "indicator"
+    (testing "stop"
+      (testing "distant shows Hl10"
+        (is (= {:top-yellow :on
+                :top-green :off
+                :top-white nil
+                :red nil
+                :bottom-white :off
+                :bottom-yellow nil
+                :replacement-red nil
+                :green-stripe nil
+                :yellow-stripe nil
+                :shortened-break-path? false}
+               (-> (signal/distant {:aspect :stop
+                                    :indicator? true
+                                    :system :hl})
+                   hl/lights))))
+
+      (testing "combination shows Hp0"
+        (is (= {:top-yellow :off
+                :top-green :off
+                :top-white nil
+                :red :on
+                :bottom-white :off
+                :bottom-yellow nil
+                :replacement-red :off
+                :green-stripe nil
+                :yellow-stripe nil
+                :shortened-break-path? false}
+               (-> (signal/combination {:distant {:aspect :stop}
+                                        :main {:aspect :stop
+                                               :indicator? true}
+                                        :system :hl})
+                   hl/lights))))
+
+      (testing "main shows Hp0"
+        (is (= {:top-yellow nil
+                :top-green :off
+                :top-white nil
+                :red :on
+                :bottom-white :off
+                :bottom-yellow nil
+                :replacement-red :off
+                :green-stripe nil
+                :yellow-stripe nil
+                :shortened-break-path? false}
+               (-> (signal/main {:aspect :stop
+                                 :indicator? true
+                                 :system :hl})
+                   hl/lights)))))
+
+    (testing "off"
+      (testing "distant shows indicator"
+        (is (= {:top-yellow :off
+                :top-green :off
+                :top-white nil
+                :red nil
+                :bottom-white :on
+                :bottom-yellow nil
+                :replacement-red nil
+                :green-stripe nil
+                :yellow-stripe nil
+                :shortened-break-path? false}
+               (-> (signal/distant {:aspect :off
+                                    :indicator? true
+                                    :system :hl})
+                   hl/lights))))
+
+      (testing "combination shows indicator"
+        (is (= {:top-yellow :off
+                :top-green :off
+                :top-white nil
+                :red :off
+                :bottom-white :on
+                :bottom-yellow nil
+                :replacement-red :off
+                :green-stripe nil
+                :yellow-stripe nil
+                :shortened-break-path? false}
+               (-> (signal/combination {:distant {:aspect :stop}
+                                        :main {:aspect :off
+                                               :indicator? true}
+                                        :system :hl})
+                   hl/lights))))
+
+      (testing "main shows indicator"
+        (is (= {:top-yellow nil
+                :top-green :off
+                :top-white nil
+                :red :off
+                :bottom-white :on
+                :bottom-yellow nil
+                :replacement-red :off
+                :green-stripe nil
+                :yellow-stripe nil
+                :shortened-break-path? false}
+               (-> (signal/main {:aspect :off
+                                 :indicator? true
+                                 :system :hl})
+                   hl/lights))))
+
+      (testing "in combination with sh1"
+        (testing "combination shows indicator"
+          (is (= {:top-yellow :off
+                  :top-green :off
+                  :top-white :off
+                  :red :off
+                  :bottom-white :on
+                  :bottom-yellow nil
+                  :replacement-red :off
+                  :green-stripe nil
+                  :yellow-stripe nil
+                  :shortened-break-path? false}
+                 (-> (signal/combination {:distant {:aspect :stop}
+                                          :main {:aspect :off
+                                                 :sh1? true
+                                                 :indicator? true}
+                                          :system :hl})
+                     hl/lights))))
+
+        (testing "main shows indicator"
+          (is (= {:top-yellow nil
+                  :top-green :off
+                  :top-white :off
+                  :red :off
+                  :bottom-white :on
+                  :bottom-yellow nil
+                  :replacement-red :off
+                  :green-stripe nil
+                  :yellow-stripe nil
+                  :shortened-break-path? false}
+                 (-> (signal/main {:aspect :off
+                                   :sh1? true
+                                   :indicator? true
+                                   :system :hl})
+                     hl/lights))))))
+
+    (testing "proceed"
+      (testing "combination with stop+zs1 expected shows Hl10"
+        (is (= {:top-yellow :on
+                :top-green :off
+                :top-white nil
+                :red :off
+                :bottom-white :off
+                :bottom-yellow nil
+                :replacement-red :off
+                :green-stripe nil
+                :yellow-stripe nil
+                :shortened-break-path? false}
+               (-> (signal/combination {:distant {:aspect :stop+zs1}
+                                        :main {:aspect :proceed
+                                               :indicator? true}
+                                        :system :hl})
+                   hl/lights))))
+
+      (testing "main shows Hl1"
+        (is (= {:top-yellow nil
+                :top-green :on
+                :top-white nil
+                :red :off
+                :bottom-white :off
+                :bottom-yellow nil
+                :replacement-red :off
+                :green-stripe nil
+                :yellow-stripe nil
+                :shortened-break-path? false}
+               (-> (signal/main {:aspect :proceed
+                                 :indicator? true
                                  :system :hl})
                    hl/lights))))))
 

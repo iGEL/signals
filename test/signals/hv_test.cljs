@@ -10,6 +10,7 @@
                        :red :on
                        :yellow nil
                        :secondary-red nil
+                       :indicator nil
                        :sh1 nil
                        :zs1 nil
                        :zs7 nil}})
@@ -18,6 +19,7 @@
                        :red :off
                        :yellow nil
                        :secondary-red nil
+                       :indicator nil
                        :sh1 nil
                        :zs1 nil
                        :zs7 nil}})
@@ -26,6 +28,7 @@
                        :red :off
                        :yellow :on
                        :secondary-red nil
+                       :indicator nil
                        :sh1 nil
                        :zs1 nil
                        :zs7 nil}})
@@ -270,6 +273,42 @@
       (is (= (merge semaphore-hp0 semaphore-vr0)
              (-> (signal/combination {:main {:aspect :stop+zs7}
                                       :distant {:aspect :stop+zs7}
+                                      :system :hv-semaphore})
+                 lights-or-arms)))))
+
+  (testing "off"
+    (testing "distant shows vr0"
+      (is (= (merge no-hp light-vr0)
+             (-> (signal/distant {:aspect :off
+                                  :system :hv-light})
+                 lights-or-arms)))
+
+      (is (= (merge no-hp semaphore-vr0)
+             (-> (signal/distant {:aspect :off
+                                  :system :hv-semaphore})
+                 lights-or-arms))))
+
+    (testing "main shows hp0"
+      (is (= (merge light-hp0 no-vr)
+             (-> (signal/main {:aspect :off
+                               :system :hv-light})
+                 lights-or-arms)))
+
+      (is (= (merge semaphore-hp0 no-vr)
+             (-> (signal/main {:aspect :off
+                               :system :hv-semaphore})
+                 lights-or-arms))))
+
+    (testing "combination shows hp0"
+      (is (= (merge light-hp0 light-vr-off)
+             (-> (signal/combination {:main {:aspect :off}
+                                      :distant {:aspect :off}
+                                      :system :hv-light})
+                 lights-or-arms)))
+
+      (is (= (merge semaphore-hp0 semaphore-vr0)
+             (-> (signal/combination {:main {:aspect :off}
+                                      :distant {:aspect :off}
                                       :system :hv-semaphore})
                  lights-or-arms)))))
 
@@ -1180,6 +1219,163 @@
                                           :distant {:aspect :stop
                                                     :slow-speed-lights [40]}
                                           :system :hv-semaphore})
+                     lights-or-arms)))))))
+
+  (testing "indicator"
+    (testing "stop"
+      (testing "distant shows vr0"
+        (is (= (merge no-hp (add-to-distant light-vr0 {:white :off}))
+               (-> (signal/distant {:aspect :stop
+                                    :indicator? true
+                                    :system :hv-light})
+                   lights-or-arms))))
+
+      (testing "main shows hp0"
+        (is (= (merge (add-to-main light-hp0 {:yellow :off
+                                              :indicator :off})
+                      no-vr)
+               (-> (signal/main {:aspect :stop
+                                 :slow-speed-lights [40]
+                                 :indicator? true
+                                 :system :hv-light})
+                   lights-or-arms))))
+
+      (testing "combination shows hp0"
+        (is (= (merge (add-to-main light-hp0 {:yellow :off
+                                              :indicator :off})
+                      light-vr-off)
+               (-> (signal/combination {:main {:aspect :stop
+                                               :slow-speed-lights [40]
+                                               :indicator? true}
+                                        :distant {:aspect :stop}
+                                        :system :hv-light})
+                   lights-or-arms)))
+
+        (is (= (merge (add-to-main light-hp0 {:yellow :off
+                                              :indicator :off})
+                      light-vr-off)
+               (-> (signal/combination {:main {:aspect :stop
+                                               :slow-speed-lights [40]
+                                               :indicator? true}
+                                        :distant {:aspect :proceed}
+                                        :system :hv-light})
+                   lights-or-arms)))
+
+        (is (= (merge (add-to-main light-hp0 {:yellow :off})
+                      (add-to-distant light-vr-off {:white :off}))
+               (-> (signal/combination {:main {:aspect :stop
+                                               :slow-speed-lights [40]}
+                                        :distant {:aspect :stop
+                                                  :indicator? true}
+                                        :system :hv-light})
+                   lights-or-arms)))))
+
+    (testing "off"
+      (testing "semaphore"
+        (testing "distant shows vr0"
+          (is (= (merge no-hp semaphore-vr0)
+                 (-> (signal/distant {:aspect :off
+                                      :indicator? true
+                                      :system :hv-semaphore})
+                     lights-or-arms))))
+
+        (testing "main shows hp0"
+          (is (= (merge semaphore-hp0 no-vr)
+                 (-> (signal/main {:aspect :off
+                                   :indicator? true
+                                   :system :hv-semaphore})
+                     lights-or-arms))))
+
+        (testing "combination shows hp0"
+          (is (= (merge (add-to-main semaphore-hp0 {:lower-arm :vertical})
+                        semaphore-vr0)
+                 (-> (signal/combination {:main {:aspect :off
+                                                 :slow-speed-lights [40]
+                                                 :indicator? true}
+                                          :distant {:aspect :stop}
+                                          :system :hv-semaphore})
+                     lights-or-arms)))
+
+          (is (= (merge semaphore-hp0 semaphore-vr0)
+                 (-> (signal/combination {:main {:aspect :stop}
+                                          :distant {:aspect :off
+                                                    :indicator? true}
+                                          :system :hv-semaphore})
+                     lights-or-arms)))))
+
+      (testing "light signal"
+        (testing "distant shows indicator"
+          (is (= (merge no-hp (add-to-distant light-vr-off {:white :on}))
+                 (-> (signal/distant {:aspect :off
+                                      :indicator? true
+                                      :system :hv-light})
+                     lights-or-arms))))
+
+        (testing "main shows indicator"
+          (is (= (merge (add-to-main light-hp0 {:yellow :off
+                                                :red :off
+                                                :indicator :on})
+                        no-vr)
+                 (-> (signal/main {:aspect :off
+                                   :slow-speed-lights [40]
+                                   :indicator? true
+                                   :system :hv-light})
+                     lights-or-arms))))
+
+        (testing "combination"
+          (testing "distant off"
+            (is (= (merge (add-to-main light-hp0 {:yellow :off})
+                          (add-to-distant light-vr-off {:white :on}))
+                   (-> (signal/combination {:main {:aspect :stop
+                                                   :slow-speed-lights [40]}
+                                            :distant {:aspect :off
+                                                      :indicator? true}
+                                            :system :hv-light})
+                       lights-or-arms))))
+
+          (testing "main off"
+            (is (= (merge (add-to-main light-hp0 {:yellow :off
+                                                  :red :off
+                                                  :indicator :on})
+                          light-vr0)
+                   (-> (signal/combination {:main {:aspect :off
+                                                   :slow-speed-lights [40]
+                                                   :indicator? true}
+                                            :distant {:aspect :stop}
+                                            :system :hv-light})
+                       lights-or-arms)))
+
+            (is (= (merge (add-to-main light-hp0 {:yellow :off
+                                                  :red :off
+                                                  :indicator :on})
+                          light-vr1)
+                   (-> (signal/combination {:main {:aspect :off
+                                                   :slow-speed-lights [40]
+                                                   :indicator? true}
+                                            :distant {:aspect :proceed}
+                                            :system :hv-light})
+                       lights-or-arms)))))))
+
+    (testing "proceed"
+      (testing "main shows hp1"
+        (is (= (merge (add-to-main light-hp1 {:indicator :off})
+                      no-vr)
+               (-> (signal/main {:aspect :proceed
+                                 :indicator? true
+                                 :system :hv-light})
+                   lights-or-arms))))
+
+      (testing "combination"
+        (testing "with stop expected shows hp1 & vr0"
+          (is (= (merge (add-to-main light-hp1 {:yellow :off
+                                                :indicator :off})
+                        light-vr0)
+                 (-> (signal/combination {:main {:aspect :proceed
+                                                 :slow-speed-lights [40]
+                                                 :indicator? true}
+                                          :distant {:aspect :stop
+                                                    :slow-speed-lights [40]}
+                                          :system :hv-light})
                      lights-or-arms))))))))
 
 (deftest speed-limit-available?

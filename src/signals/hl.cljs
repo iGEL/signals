@@ -21,25 +21,37 @@
 
 (s/def ::lights (s/keys :req-un [::top-yellow ::top-green ::top-white ::red ::bottom-white ::bottom-yellow ::replacement-red ::green-stripe ::yellow-stripe ::shortened-break-path?]))
 
-(defn lights [{{main-aspect :aspect
+(defn lights [{{main-aspect* :aspect
                 main-slow-speed-lights :slow-speed-lights
                 main-speed-limit :speed-limit
                 sh1? :sh1?
-                zs1? :zs1?} :main
-               {distant-aspect :aspect
+                zs1? :zs1?
+                main-indicator? :indicator?} :main
+               {distant-aspect* :aspect
                 distant-slow-speed-lights :slow-speed-lights
                 distant-speed-limit :speed-limit
-                distant-addition :distant-addition} :distant
+                distant-addition :distant-addition
+                distant-indicator? :indicator?} :distant
                signal-type :type
                :as signal}]
   {:pre [(p/arg! ::spec/signal signal)]
    :post [(p/ret! ::lights %)]}
-  (let [distant? (= :distant signal-type)
+  (let [main-aspect (if (and (= :off main-aspect*)
+                             (not main-indicator?))
+                      :stop
+                      main-aspect*)
+        distant-aspect (if (and (= :off distant-aspect*)
+                                (not distant-indicator?))
+                         :stop
+                         distant-aspect*)
+        distant? (= :distant signal-type)
         main? (= :main signal-type)
         distant-40-or-60-limit? (and (some #{40 60} distant-slow-speed-lights)
                                      (#{40 60} distant-speed-limit))]
     {:top-yellow (cond
                    main? nil
+                   (= :off main-aspect) :off
+                   (= :off distant-aspect) :off
                    (stop-aspect? main-aspect) :off
                    (stop-aspect? distant-aspect) :on
                    distant-40-or-60-limit? :blinking
@@ -47,7 +59,9 @@
      :top-green (cond
                   (or (stop-aspect? main-aspect)
                       (stop-aspect? distant-aspect)
-                      distant-40-or-60-limit?) :off
+                      distant-40-or-60-limit?
+                      (= :off main-aspect)
+                      (= :off distant-aspect)) :off
                   (and (some #{100} distant-slow-speed-lights)
                        (= 100 distant-speed-limit)) :blinking
                   :else :on)
@@ -57,10 +71,13 @@
                   :else :off)
      :red (cond
             distant? nil
+            (= :off main-aspect) :off
             (stop-aspect? main-aspect) :on
             :else :off)
      :bottom-white (cond
-                     (not (or sh1? zs1?)) nil
+                     (not (or sh1? zs1? main-indicator? distant-indicator?)) nil
+                     (= :off main-aspect) :on
+                     (= :off distant-aspect) :on
                      (and sh1? (= :stop+sh1 main-aspect)) :on
                      (and zs1? (= :stop+zs1 main-aspect)) :blinking
                      :else :off)

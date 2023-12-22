@@ -37,6 +37,14 @@
                     :type "info"
                     :active? zs7?} "Zs7")))))
 
+(defui indicator-btn [{:keys [state set-state!]}]
+  (when-not (= :hv-semaphore (:system state))
+    (let [indicator? (-> state :main :indicator?)]
+      ($ button {:on-click #(set-state! (update-in state [:main :indicator?] not))
+                 :type "info"
+                 :active? indicator?}
+         "Kennlicht"))))
+
 (defui speed-limit-config-btns [{:keys [set-state! state]}]
   (let [slow-speed-lights (-> state :main :slow-speed-lights seq)
         active-40? (some #{40} slow-speed-lights)
@@ -108,8 +116,7 @@
 
 (defui base [{:keys [main set-main! distant set-distant! set-both!]}]
   ($ :<>
-     ($ feature-btns {:set-state! set-main! :state main})
-     ($ :div
-        ($ shortened-break-path-btn {:set-state! set-distant! :state distant}))
-     ($ :div
-        ($ speed-limit-config-btns {:set-state! set-both! :state main}))))
+     ($ :div ($ feature-btns {:set-state! set-main! :state main}))
+     ($ :div ($ indicator-btn {:set-state! set-main! :state main}))
+     ($ :div ($ shortened-break-path-btn {:set-state! set-distant! :state distant}))
+     ($ :div ($ speed-limit-config-btns {:set-state! set-both! :state main}))))

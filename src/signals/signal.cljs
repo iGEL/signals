@@ -79,8 +79,8 @@
 
 (defn main
   "Constructor for a main signal"
-  [{:keys [aspect speed-limit slow-speed-lights sh1? zs1? zs3 zs7? system]
-    :or {aspect :stop sh1? false zs1? false zs3 nil zs7? false slow-speed-lights []}}]
+  [{:keys [aspect speed-limit slow-speed-lights sh1? zs1? zs3 zs7? indicator? system]
+    :or {aspect :stop sh1? false zs1? false zs7? false slow-speed-lights []}}]
   {:post [(p/ret! ::spec/signal %)]}
   {:system system
    :type :main
@@ -90,12 +90,13 @@
           :sh1? sh1?
           :zs1? zs1?
           :zs3 zs3
-          :zs7? zs7?}})
+          :zs7? zs7?
+          :indicator? indicator?}})
 
 (defn distant
   "Constructor for a distant signal"
-  [{:keys [aspect speed-limit slow-speed-lights distant-addition zs3 system]
-    :or {aspect :stop zs3 nil slow-speed-lights []}}]
+  [{:keys [aspect speed-limit slow-speed-lights distant-addition zs3 indicator? system]
+    :or {aspect :stop slow-speed-lights []}}]
   {:post [(p/ret! ::spec/signal %)]}
   {:system system
    :type :distant
@@ -103,21 +104,24 @@
              :speed-limit speed-limit
              :distant-addition distant-addition
              :slow-speed-lights slow-speed-lights
-             :zs3 zs3}})
+             :zs3 zs3
+             :indicator? indicator?}})
 
 (defn combination
   "Constructor for a combination of a main & distant signal"
   [{{distant-aspect :aspect
      distant-speed-limit :speed-limit
      distant-slow-speed-lights :slow-speed-lights
+     distant-indicator? :indicator?
      zs3v :zs3
      :keys [distant-addition]
      :or {distant-aspect :stop distant-slow-speed-lights []}} :distant
     {main-aspect :aspect
      main-speed-limit :speed-limit
      main-slow-speed-lights :slow-speed-lights
+     main-indicator? :indicator?
      :keys [sh1? zs1? zs3 zs7?]
-     :or {main-aspect :stop sh1? false zs1? false zs3 nil zs7? false main-slow-speed-lights []}} :main
+     :or {main-aspect :stop sh1? false zs1? false zs7? false main-slow-speed-lights []}} :main
     system :system}]
   {:post [(p/ret! ::spec/signal %)]}
   {:system system
@@ -126,11 +130,13 @@
              :speed-limit distant-speed-limit
              :distant-addition distant-addition
              :slow-speed-lights distant-slow-speed-lights
-             :zs3 zs3v}
+             :zs3 zs3v
+             :indicator? distant-indicator?}
    :main {:aspect main-aspect
           :speed-limit main-speed-limit
           :slow-speed-lights main-slow-speed-lights
           :sh1? sh1?
           :zs1? zs1?
           :zs3 zs3
-          :zs7? zs7?}})
+          :zs7? zs7?
+          :indicator? main-indicator?}})

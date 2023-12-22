@@ -23,13 +23,13 @@
 
 (s/def ::arms (s/keys :req-un [::distant ::main]))
 
-(defn arms [{{main-aspect :aspect
+(defn arms [{{main-aspect* :aspect
               main-slow-speed-lights :slow-speed-lights
               main-speed-limit :speed-limit
               sh1? :sh1?
               zs1? :zs1?
               zs7? :zs7?} :main
-             {distant-aspect :aspect
+             {distant-aspect* :aspect
               distant-slow-speed-lights :slow-speed-lights
               distant-speed-limit :speed-limit
               distant-addition :distant-addition} :distant
@@ -37,47 +37,49 @@
              :as signal}]
   {:pre [(p/arg! ::spec/signal signal)]
    :post [(p/ret! ::arms %)]}
-  {:main (when-not (= :distant signal-type)
-           {:top-arm (if (stop-aspect? main-aspect) :horizontal :inclined)
-            :lower-arm (cond
-                         (not (some #{40} main-slow-speed-lights)) nil
-                         (and (not (stop-aspect? main-aspect))
-                              main-speed-limit
-                              (>= 60 main-speed-limit)) :inclined
-                         :else :vertical)
-            :sh1 (cond
-                   (not sh1?) nil
-                   (#{:proceed :stop+sh1} main-aspect) :inclined
-                   :else :horizontal)
-            :zs1 (cond
-                   (not zs1?) nil
-                   (= :stop+zs1 main-aspect) :on
-                   :else :off)
-            :zs7 (cond
-                   (not zs7?) nil
-                   (= :stop+zs7 main-aspect) :on
-                   :else :off)})
-   :distant (when (and (not= :main signal-type)
-                       (not= :repeater distant-addition))
-              (let [has-slow-speed? (some #{40} distant-slow-speed-lights)
-                    slow-speed? (and has-slow-speed?
-                                     (not (stop-aspect? main-aspect))
-                                     (not (stop-aspect? distant-aspect))
-                                     distant-speed-limit
-                                     (>= 60 distant-speed-limit))]
-                {:disk (if (or (stop-aspect? main-aspect)
-                               (stop-aspect? distant-aspect)
-                               slow-speed?) :vertical
-                           :horizontal)
-                 :arm (cond
-                        (not has-slow-speed?) nil
-                        slow-speed? :inclined
-                        :else :vertical)
-                 :right-lights (if (and (not (stop-aspect? main-aspect))
-                                        (not (stop-aspect? distant-aspect)))
-                                 :inclined
-                                 :vertical)
-                 :shortened-break-path? (= :shortened-break-path distant-addition)}))})
+  (let [main-aspect (if (= :off main-aspect*) :stop main-aspect*)
+        distant-aspect (if (= :off distant-aspect*) :stop distant-aspect*)]
+    {:main (when-not (= :distant signal-type)
+             {:top-arm (if (stop-aspect? main-aspect) :horizontal :inclined)
+              :lower-arm (cond
+                           (not (some #{40} main-slow-speed-lights)) nil
+                           (and (not (stop-aspect? main-aspect))
+                                main-speed-limit
+                                (>= 60 main-speed-limit)) :inclined
+                           :else :vertical)
+              :sh1 (cond
+                     (not sh1?) nil
+                     (#{:proceed :stop+sh1} main-aspect) :inclined
+                     :else :horizontal)
+              :zs1 (cond
+                     (not zs1?) nil
+                     (= :stop+zs1 main-aspect) :on
+                     :else :off)
+              :zs7 (cond
+                     (not zs7?) nil
+                     (= :stop+zs7 main-aspect) :on
+                     :else :off)})
+     :distant (when (and (not= :main signal-type)
+                         (not= :repeater distant-addition))
+                (let [has-slow-speed? (some #{40} distant-slow-speed-lights)
+                      slow-speed? (and has-slow-speed?
+                                       (not (stop-aspect? main-aspect))
+                                       (not (stop-aspect? distant-aspect))
+                                       distant-speed-limit
+                                       (>= 60 distant-speed-limit))]
+                  {:disk (if (or (stop-aspect? main-aspect)
+                                 (stop-aspect? distant-aspect)
+                                 slow-speed?) :vertical
+                             :horizontal)
+                   :arm (cond
+                          (not has-slow-speed?) nil
+                          slow-speed? :inclined
+                          :else :vertical)
+                   :right-lights (if (and (not (stop-aspect? main-aspect))
+                                          (not (stop-aspect? distant-aspect)))
+                                   :inclined
+                                   :vertical)
+                   :shortened-break-path? (= :shortened-break-path distant-addition)}))}))
 
 (defui main-lights [{:keys [position top-color bottom-color]}]
   (let [colors {:red "#e64e54"
