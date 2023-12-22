@@ -36,12 +36,14 @@
                :as signal}]
   {:pre [(p/arg! ::spec/signal signal)]
    :post [(p/ret! ::lights %)]}
-  (let [main-aspect (if (and (= :off main-aspect*)
-                             (not main-indicator?))
+  (let [main-aspect (if (or (= :dark main-aspect*)
+                            (and (= :off main-aspect*)
+                                 (not main-indicator?)))
                       :stop
                       main-aspect*)
-        distant-aspect (if (and (= :off distant-aspect*)
-                                (not distant-indicator?))
+        distant-aspect (if (or (= :dark distant-aspect*)
+                               (and (= :off distant-aspect*)
+                                    (not distant-indicator?)))
                          :stop
                          distant-aspect*)
         distant? (= :distant signal-type)

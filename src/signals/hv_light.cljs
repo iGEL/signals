@@ -49,7 +49,7 @@
                                 (= :off distant-aspect*)) :stop distant-aspect*)]
     {:main (when-not (= :distant signal-type)
              {:green (if (or (stop-aspect? main-aspect)
-                             (= :off main-aspect)) :off :on)
+                             (#{:off :dark} main-aspect)) :off :on)
               :red (if (stop-aspect? main-aspect) :on :off)
               :yellow (let [has-light? (some #{40} main-slow-speed-lights)]
                         (cond
@@ -86,7 +86,7 @@
                   {:top-green (cond
                                 (stop-aspect? main-aspect) :off
                                 (stop-aspect? distant-aspect) :off
-                                (= :off distant-aspect) :off
+                                (#{:off :dark} distant-aspect) :off
                                 :else :on)
                    :top-yellow (cond
                                  (stop-aspect? main-aspect) :off
@@ -98,7 +98,7 @@
                    :bottom-green (cond
                                    (stop-aspect? main-aspect) :off
                                    (stop-aspect? distant-aspect) :off
-                                   (= :off distant-aspect) :off
+                                   (#{:off :dark} distant-aspect) :off
                                    slow-speed? :off
                                    :else :on)
                    :bottom-yellow (cond

@@ -3,7 +3,7 @@
    [cljs.spec.alpha :as s]))
 
 ;; Aspects
-(s/def ::aspect #{:stop :proceed :stop+zs1 :stop+zs7 :stop+sh1 :off})
+(s/def ::aspect #{:stop :proceed :stop+zs1 :stop+zs7 :stop+sh1 :off :dark})
 (s/def ::speed-limit (s/nilable (s/and int? pos?)))
 
 ;; Configuration

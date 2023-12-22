@@ -41,11 +41,20 @@
                                 "Stelle das Signal auf Halt und aktiviere das Zs7")
                        :active? zs7-active?
                        :type "danger"} "Zs7")))
-       (when (and (:indicator? main-state)
-                  (not= :hv-semaphore (:system state)))
+       (when (or (#{:ks :hv-light} (:system state))
+                 (and (:indicator? main-state)
+                      (= :hl (:system state))))
          ($ :div
-            ($ button {:on-click #(set-state! {:aspect :off})
-                       :title "Betrieblich abschalten"
-                       :active? (= :off current-aspect)
-                       :type "light"}
-               "Aus"))))))
+            ($ :div.btn-group
+               (when (:indicator? main-state)
+                 ($ button {:on-click #(set-state! {:aspect :off})
+                            :title "Betrieblich abschalten"
+                            :active? (= :off current-aspect)
+                            :type "light"}
+                    "Aus"))
+               (when (#{:ks :hv-light} (:system state))
+                 ($ button {:on-click #(set-state! {:aspect :dark})
+                            :title "Dunkelschaltung"
+                            :active? (= :dark current-aspect)
+                            :type "light"}
+                    "Dunkel"))))))))

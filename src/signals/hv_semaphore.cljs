@@ -37,8 +37,8 @@
              :as signal}]
   {:pre [(p/arg! ::spec/signal signal)]
    :post [(p/ret! ::arms %)]}
-  (let [main-aspect (if (= :off main-aspect*) :stop main-aspect*)
-        distant-aspect (if (= :off distant-aspect*) :stop distant-aspect*)]
+  (let [main-aspect (if (#{:off :dark} main-aspect*) :stop main-aspect*)
+        distant-aspect (if (#{:off :dark} distant-aspect*) :stop distant-aspect*)]
     {:main (when-not (= :distant signal-type)
              {:top-arm (if (stop-aspect? main-aspect) :horizontal :inclined)
               :lower-arm (cond

@@ -60,14 +60,14 @@
      :green (cond
               (or (stop-aspect? main-aspect)
                   (stop-aspect? distant-aspect)
-                  (= :off main-aspect)
-                  (= :off distant-aspect)) :off
+                  (#{:dark :off} main-aspect)
+                  (#{:dark :off} distant-aspect)) :off
               (and distant-speed-limit zs3) :blinking
               :else :on)
      :yellow (cond
                (= :main signal-type) nil
                (or (stop-aspect? main-aspect)
-                   (= :off main-aspect)) :off
+                   (#{:dark :off} main-aspect)) :off
                (stop-aspect? distant-aspect) :on
                :else :off)
      :center-white (cond

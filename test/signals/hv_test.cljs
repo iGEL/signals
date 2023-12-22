@@ -363,6 +363,72 @@
                                         :system :hv-semaphore})
                    lights-or-arms))))))
 
+  (testing "dark"
+    (testing "semaphore"
+      (testing "distant shows vr0"
+        (is (= (merge no-hp semaphore-vr0)
+               (-> (signal/distant {:aspect :dark
+                                    :system :hv-semaphore})
+                   lights-or-arms))))
+
+      (testing "main shows hp0"
+        (is (= (merge semaphore-hp0 no-vr)
+               (-> (signal/main {:aspect :dark
+                                 :system :hv-semaphore})
+                   lights-or-arms))))
+
+      (testing "combination shows hp0"
+        (is (= (merge (add-to-main semaphore-hp0 {:lower-arm :vertical})
+                      semaphore-vr0)
+               (-> (signal/combination {:main {:aspect :dark
+                                               :slow-speed-lights [40]}
+                                        :distant {:aspect :stop}
+                                        :system :hv-semaphore})
+                   lights-or-arms)))
+
+        (is (= (merge semaphore-hp0 semaphore-vr0)
+               (-> (signal/combination {:main {:aspect :stop}
+                                        :distant {:aspect :dark}
+                                        :system :hv-semaphore})
+                   lights-or-arms)))))
+
+    (testing "light signal"
+      (testing "distant shows nothing"
+        (is (= (merge no-hp light-vr-off)
+               (-> (signal/distant {:aspect :dark
+                                    :system :hv-light})
+                   lights-or-arms))))
+
+      (testing "main shows nothing"
+        (is (= (merge (add-to-main light-hp0 {:red :off})
+                      no-vr)
+               (-> (signal/main {:aspect :dark
+                                 :system :hv-light})
+                   lights-or-arms))))
+
+      (testing "combination"
+        (testing "distant dark"
+          (is (= (merge light-hp0 light-vr-off)
+                 (-> (signal/combination {:main {:aspect :stop}
+                                          :distant {:aspect :dark}
+                                          :system :hv-light})
+                     lights-or-arms))))
+
+        (testing "main dark"
+          (is (= (merge (add-to-main light-hp0 {:red :off})
+                        light-vr0)
+                 (-> (signal/combination {:main {:aspect :dark}
+                                          :distant {:aspect :stop}
+                                          :system :hv-light})
+                     lights-or-arms)))
+
+          (is (= (merge (add-to-main light-hp0 {:red :off})
+                        light-vr1)
+                 (-> (signal/combination {:main {:aspect :dark}
+                                          :distant {:aspect :proceed}
+                                          :system :hv-light})
+                     lights-or-arms)))))))
+
   (testing "slow-speed-lights"
     (testing "stop"
       (testing "distant shows vr0"

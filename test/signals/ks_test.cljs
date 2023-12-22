@@ -338,6 +338,56 @@
                                     :system :ks})
                    ks/lights))))))
 
+  (testing "dark"
+    (testing "distant shows nothing"
+      (is (= {:top-white nil
+              :red nil
+              :green :off
+              :yellow :off
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/distant {:aspect :dark
+                                  :system :ks})
+                 ks/lights))))
+
+    (testing "combination shows nothing"
+      (is (= {:top-white nil
+              :red :off
+              :green :off
+              :yellow :off
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/combination {:distant {:aspect :stop}
+                                      :main {:aspect :dark}
+                                      :system :ks})
+                 ks/lights)))
+
+      (is (= {:top-white nil
+              :red :off
+              :green :off
+              :yellow :off
+              :center-white nil
+              :zs7 nil
+              :bottom-white nil}
+             (-> (signal/combination {:distant {:aspect :proceed}
+                                      :main {:aspect :dark}
+                                      :system :ks})
+                 ks/lights)))
+
+      (testing "main shows nothing"
+        (is (= {:top-white nil
+                :red :off
+                :green :off
+                :yellow nil
+                :center-white nil
+                :zs7 nil
+                :bottom-white nil}
+               (-> (signal/main {:aspect :dark
+                                 :system :ks})
+                   ks/lights))))))
+
   (testing "shortened break path"
     (testing "stop"
       (testing "distant shows ks2 plus top white"
